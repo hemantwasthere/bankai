@@ -30,7 +30,7 @@ export function formatNumberWithCommas(
   const numberValue = typeof value === "string" ? Number(value) : value;
 
   if (isNaN(numberValue)) {
-    throw new Error("Input must be a valid number");
+    return "0";
   }
 
   return numberValue

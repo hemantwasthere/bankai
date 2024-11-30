@@ -98,7 +98,7 @@ const Navbar = ({ className }: { className?: string }) => {
   const connectorConfig: ConnectOptionsWithConnectors = useMemo(() => {
     return {
       modalMode: "canAsk",
-      modalTheme: "light",
+      modalTheme: "dark",
       webWalletUrl: "https://web.argent.xyz",
       argentMobileOptions: {
         dappName: "Bankai",
@@ -173,7 +173,10 @@ const Navbar = ({ className }: { className?: string }) => {
 
   return (
     <header
-      className={cn("flex w-full items-center justify-between p-3", className)}
+      className={cn(
+        "flex w-full items-start justify-between p-3 pt-4",
+        className,
+      )}
     >
       <Icons.logo className="h-[70px] w-fit" />
       <div
