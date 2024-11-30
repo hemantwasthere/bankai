@@ -218,7 +218,7 @@ const Navbar = ({ className }: { className?: string }) => {
                     }}
                     className="flex h-9 items-center justify-center gap-2 rounded-md"
                   >
-                    <Icons.gradient />
+                    <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
                     <p className="flex items-center gap-1 text-sm">
                       {address && shortAddress(address, 4, 4)}
                     </p>
@@ -226,7 +226,7 @@ const Navbar = ({ className }: { className?: string }) => {
 
                   <X
                     onClick={() => (disconnect(), disconnectAsync())}
-                    className="size-4 text-white/70"
+                    className="size-4 text-[#646498]"
                   />
                 </div>
               ) : (
@@ -238,13 +238,13 @@ const Navbar = ({ className }: { className?: string }) => {
                     }}
                     className="flex w-fit items-center justify-center gap-2 rounded-md"
                   >
-                    <Icons.wallet className="size-5 text-white/70" />
+                    <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
                     {shortAddress(address, 4, 4)}
                   </div>
 
                   <X
                     onClick={() => (disconnect(), disconnectAsync())}
-                    className="size-4 text-white/70"
+                    className="size-4 text-[#646498]"
                   />
                 </div>
               )}
