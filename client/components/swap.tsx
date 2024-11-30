@@ -378,16 +378,7 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  This fee applies exclusively to your staking rewards and does
-                  NOT affect your staked amount. You might qualify for a future
-                  fee rebate.{" "}
-                  <Link
-                    target="_blank"
-                    href="https://blog.endur.fi/endur-reimagining-value-distribution-in-liquid-staking-on-starknet"
-                    className="text-blue-600 underline"
-                  >
-                    Learn more
-                  </Link>
+                  todo
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -412,16 +403,7 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  This fee applies exclusively to your staking rewards and does
-                  NOT affect your staked amount. You might qualify for a future
-                  fee rebate.{" "}
-                  <Link
-                    target="_blank"
-                    href="https://blog.endur.fi/endur-reimagining-value-distribution-in-liquid-staking-on-starknet"
-                    className="text-blue-600 underline"
-                  >
-                    Learn more
-                  </Link>
+                  todo
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -442,16 +424,7 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  This fee applies exclusively to your staking rewards and does
-                  NOT affect your staked amount. You might qualify for a future
-                  fee rebate.{" "}
-                  <Link
-                    target="_blank"
-                    href="https://blog.endur.fi/endur-reimagining-value-distribution-in-liquid-staking-on-starknet"
-                    className="text-blue-600 underline"
-                  >
-                    Learn more
-                  </Link>
+                  todo
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
