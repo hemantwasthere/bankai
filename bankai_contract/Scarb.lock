@@ -39,6 +39,16 @@ name = "bankai_contract"
 version = "0.1.0"
 dependencies = [
  "alexandria_math",
+ "erc4626",
+ "openzeppelin",
+ "snforge_std",
+]
+
+[[package]]
+name = "erc4626"
+version = "0.1.0"
+source = "git+https://github.com/0x-minato/ERC4626.git#b49ee9081cb63c80627832ba3b6dbacf47ddbc7e"
+dependencies = [
  "openzeppelin",
  "snforge_std",
 ]
