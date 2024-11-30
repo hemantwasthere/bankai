@@ -9,3 +9,7 @@ pub mod interfaces {
 pub mod storage {
     pub mod data_modal;
 }
+
+pub mod utils {
+    pub mod ERC20Helper;
+}
