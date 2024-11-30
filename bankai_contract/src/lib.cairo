@@ -13,3 +13,7 @@ pub mod storage {
 pub mod utils {
     pub mod ERC20Helper;
 }
+
+pub mod external {
+    pub mod pow;
+}
