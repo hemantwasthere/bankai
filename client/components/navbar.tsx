@@ -178,7 +178,7 @@ const Navbar = ({ className }: { className?: string }) => {
         className,
       )}
     >
-      <Icons.logo className="h-[70px] w-fit" />
+      <Icons.b className="h-[70px] w-fit" />
       <div
         className={cn(
           "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] text-sm font-bold text-white/70 focus-visible:outline-white",
