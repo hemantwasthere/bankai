@@ -191,7 +191,7 @@ const Navbar = ({ className }: { className?: string }) => {
         {!address && (
           <p
             className={cn(
-              "relative flex w-[9.5rem] select-none items-center justify-center gap-1 bg-transparent text-sm",
+              "relative flex w-[11rem] select-none items-center justify-center gap-1 bg-transparent text-sm",
             )}
           >
             Connect Wallet
@@ -201,7 +201,7 @@ const Navbar = ({ className }: { className?: string }) => {
         {address && (
           <>
             {!isMobile ? (
-              <div className="flex w-[9.5rem] items-center justify-center gap-2">
+              <div className="flex w-[11rem] items-center justify-center gap-2">
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(address);
@@ -223,7 +223,7 @@ const Navbar = ({ className }: { className?: string }) => {
                 />
               </div>
             ) : (
-              <div className="flex w-[9.5rem] items-center justify-center gap-2">
+              <div className="flex w-[11rem] items-center justify-center gap-2">
                 <div
                   onClick={() => {
                     navigator.clipboard.writeText(address);

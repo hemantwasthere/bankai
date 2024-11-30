@@ -16,6 +16,15 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Tooltip,
@@ -43,6 +52,9 @@ const formSchema = z.object({
 export type FormValues = z.infer<typeof formSchema>;
 
 const Swap: React.FC = () => {
+  const [selectedToken, setSelectedToken] = React.useState("xstrk");
+  const [swapToken, setSwapToken] = React.useState("sstrk");
+
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
@@ -174,8 +186,56 @@ const Swap: React.FC = () => {
       </div>
 
       <div className="mt-4 flex w-full flex-col items-start rounded-xl rounded-b-none bg-[#1A1A2D] p-4 pb-8 lg:gap-2">
-        <div className="flex w-full items-center justify-between">
-          <span className="text-white/60">dropdown</span>
+        <div className="mb-3 flex w-full items-center justify-between">
+          <Select
+            value={selectedToken}
+            onValueChange={setSelectedToken}
+            defaultValue="xstrk"
+          >
+            <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent className="border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
+              <SelectGroup className="space-y-0.5">
+                <SelectLabel className="text-xs text-muted-foreground">
+                  LST tokens
+                </SelectLabel>
+                <SelectItem
+                  value="xstrk"
+                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "xstrk",
+                  })}
+                >
+                  xSTRK
+                </SelectItem>
+                <SelectItem
+                  value="sstrk"
+                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "sstrk",
+                  })}
+                >
+                  sSTRK
+                </SelectItem>
+                <SelectItem
+                  value="nststrk"
+                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "nststrk",
+                  })}
+                >
+                  nstSTRK
+                </SelectItem>
+                <SelectItem
+                  value="zend"
+                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "zend",
+                  })}
+                >
+                  zend
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
           <>
             <div className="hidden text-[#8D9C9C] lg:block">
               <button
@@ -246,7 +306,54 @@ const Swap: React.FC = () => {
       </div>
 
       <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pt-6 lg:gap-2">
-        <div className="text-white/60">dropdown</div>
+        <Select
+          value={swapToken}
+          onValueChange={setSwapToken}
+          defaultValue="sstrk"
+        >
+          <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
+            <SelectValue placeholder="Select a fruit" />
+          </SelectTrigger>
+          <SelectContent className="border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
+            <SelectGroup className="space-y-0.5">
+              <SelectLabel className="text-xs text-muted-foreground">
+                LST tokens
+              </SelectLabel>
+              <SelectItem
+                value="xstrk"
+                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                  "!bg-[#2F2F3F] !text-white/80": swapToken === "xstrk",
+                })}
+              >
+                xSTRK
+              </SelectItem>
+              <SelectItem
+                value="sstrk"
+                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                  "!bg-[#2F2F3F] !text-white/80": swapToken === "sstrk",
+                })}
+              >
+                sSTRK
+              </SelectItem>
+              <SelectItem
+                value="nststrk"
+                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                  "!bg-[#2F2F3F] !text-white/80": swapToken === "nststrk",
+                })}
+              >
+                nstSTRK
+              </SelectItem>
+              <SelectItem
+                value="zend"
+                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
+                  "!bg-[#2F2F3F] !text-white/80": swapToken === "zend",
+                })}
+              >
+                zend
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <div className="flex flex-col items-end">
           <span className="text-white/80">0.968062567 xSTRK</span>
           <span className="text-xs text-[#F25E35]">
@@ -356,7 +463,7 @@ const Swap: React.FC = () => {
         {!address && (
           <Button
             onClick={() => connectWallet()}
-            className="w-full rounded-2xl bg-[#395C6A] py-6 text-sm font-semibold text-white/80 transition-all hover:bg-[#34535f] hover:text-white/90 disabled:bg-[#557c8d] disabled:text-white/50 disabled:opacity-80"
+            className="w-full rounded-lg bg-[#395C6A] py-6 text-sm font-semibold text-white/80 transition-all hover:bg-[#34535f] hover:text-white/90 disabled:bg-[#557c8d] disabled:text-white/50 disabled:opacity-80"
           >
             Connect Wallet
           </Button>

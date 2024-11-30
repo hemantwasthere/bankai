@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree } from "next/font/google";
+import { Figtree, IBM_Plex_Mono, Rubik } from "next/font/google";
 
 import Providers from "@/components/providers";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -13,8 +13,9 @@ export const metadata: Metadata = {
   description: "Bankai is a multi LST pool on Starknet.",
 };
 
-const font = Figtree({
+const font = IBM_Plex_Mono({
   subsets: ["latin-ext"],
+  weight: "400",
 });
 
 export default function RootLayout({
