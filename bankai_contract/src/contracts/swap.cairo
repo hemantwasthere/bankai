@@ -6,6 +6,7 @@ pub trait ISwapStrat<T> {
     fn swap(ref self: T, from_add: ContractAddress, to_add: ContractAddress, from_amt: u256);
     fn get_LST_data(ref self: T, token: ContractAddress) -> LST; 
     fn get_amt_after_fee(ref self: T, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256);
+    fn add_lst(ref self: T, lst_address: ContractAddress);
 }
 
 #[starknet::contract]
@@ -33,7 +34,10 @@ mod Swap {
         reng: ReentrancyGuardComponent::Storage,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
+        lst_num: u256,
         lstTokens: LegacyMap::<ContractAddress, LST>,
+        min_liquidity: u256,
+        max_liquidity: u256,
         fee_constant: u256,
         fee_collector: ContractAddress,
     }
@@ -61,11 +65,15 @@ mod Swap {
         ref self: ContractState,
         owner: ContractAddress,
         fee_constant: u256,
-        fee_collector: ContractAddress
+        fee_collector: ContractAddress,
+        min_liquidity: u256,
+        max_liquidity: u256,
     ) {
         self.ownable.initializer(owner);
         self.fee_constant.write(fee_constant);
         self.fee_collector.write(fee_collector);
+        self.min_liquidity.write(min_liquidity);
+        self.max_liquidity.write(max_liquidity);
     }
 
     #[abi(embed_v0)]
@@ -112,6 +120,22 @@ mod Swap {
             let fees = (from_val * ( token_fees / 1000 )) / fee_const;
              
             ( from_val - fees , fees)
+        }
+
+        fn add_lst(ref self: ContractState, lst_address: ContractAddress) {
+            self.ownable.assert_only_owner();
+            let lst_data = LST {
+                token_address: lst_address,
+                fees: SwapFees {
+                    input_fee: 0,
+                    output_fee: 10
+                }
+            };  
+            let lst_count = self.lst_num.read();
+            self.lstTokens.write(lst_address, lst_data);
+            self.lst_num.write(lst_count + 1);
+            self.min_liquidity.write((4 * 100) / lst_count + 1);
+            self.max_liquidity.write((100 * 100) / lst_count +1);
         }
     }
 }
