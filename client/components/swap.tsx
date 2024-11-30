@@ -267,8 +267,10 @@ const Swap: React.FC = () => {
                       <div className="relative">
                         <Input
                           className={cn(
-                            "mx-auto h-fit max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
+                            "mx-auto h-fit min-w-min max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
+                              "text-start":
+                                form.watch("swapAmount")?.length === 0,
                               "max-w-[250px]":
                                 form.watch("swapAmount")?.length > 9,
                               "max-w-[360px]":
