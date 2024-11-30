@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAccount, useBalance, useConnect } from "@starknet-react/core";
-import { DollarSign, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -14,13 +14,7 @@ import {
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
@@ -29,7 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NETWORK, STRK_TOKEN } from "@/constants";
+import { NETWORK, STRK_TOKEN_SEPOLIA } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
 
@@ -52,7 +46,7 @@ const Swap: React.FC = () => {
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
-    token: STRK_TOKEN,
+    token: STRK_TOKEN_SEPOLIA,
   });
   const { connect: connectSnReact } = useConnect();
 
