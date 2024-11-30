@@ -9,11 +9,7 @@ import {
   useSwitchChain,
 } from "@starknet-react/core";
 import { useAtom, useSetAtom } from "jotai";
-import { ChartPie, Menu, X } from "lucide-react";
-import { Figtree } from "next/font/google";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 import React, { useMemo } from "react";
 import { constants, num } from "starknet";
 import {
@@ -177,80 +173,73 @@ const Navbar = ({ className }: { className?: string }) => {
 
   return (
     <header
-      className={cn(
-        "flex w-full items-center justify-end p-3",
-        {
-          "justify-between": isMobile,
-        },
-        className,
-      )}
+      className={cn("flex w-full items-center justify-between p-3", className)}
     >
-      <div className="flex items-center gap-4">
-        <div
-          className={cn(
-            "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] text-sm font-bold text-white/70 focus-visible:outline-white",
-            {
-              "h-[34px]": isMobile,
-            },
-          )}
-          onClick={() => !address && connectWallet()}
-        >
-          {!address && (
-            <p
-              className={cn(
-                "relative flex w-[9.5rem] select-none items-center justify-center gap-1 bg-transparent text-sm",
-              )}
-            >
-              Connect Wallet
-            </p>
-          )}
+      <Icons.logo className="h-[70px] w-fit" />
+      <div
+        className={cn(
+          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] text-sm font-bold text-white/70 focus-visible:outline-white",
+          {
+            "h-[34px]": isMobile,
+          },
+        )}
+        onClick={() => !address && connectWallet()}
+      >
+        {!address && (
+          <p
+            className={cn(
+              "relative flex w-[9.5rem] select-none items-center justify-center gap-1 bg-transparent text-sm",
+            )}
+          >
+            Connect Wallet
+          </p>
+        )}
 
-          {address && (
-            <>
-              {!isMobile ? (
-                <div className="flex w-[9.5rem] items-center justify-center gap-2">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(address);
-                      toast({
-                        description: "Address copied to clipboard",
-                      });
-                    }}
-                    className="flex h-9 items-center justify-center gap-2 rounded-md"
-                  >
-                    <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
-                    <p className="flex items-center gap-1 text-sm">
-                      {address && shortAddress(address, 4, 4)}
-                    </p>
-                  </button>
+        {address && (
+          <>
+            {!isMobile ? (
+              <div className="flex w-[9.5rem] items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(address);
+                    toast({
+                      description: "Address copied to clipboard",
+                    });
+                  }}
+                  className="flex h-9 items-center justify-center gap-2 rounded-md"
+                >
+                  <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
+                  <p className="flex items-center gap-1 text-sm">
+                    {address && shortAddress(address, 4, 4)}
+                  </p>
+                </button>
 
-                  <X
-                    onClick={() => (disconnect(), disconnectAsync())}
-                    className="size-4 text-[#646498]"
-                  />
+                <X
+                  onClick={() => (disconnect(), disconnectAsync())}
+                  className="size-4 text-[#646498]"
+                />
+              </div>
+            ) : (
+              <div className="flex w-[9.5rem] items-center justify-center gap-2">
+                <div
+                  onClick={() => {
+                    navigator.clipboard.writeText(address);
+                    toast({ description: "Address copied to clipboard" });
+                  }}
+                  className="flex w-fit items-center justify-center gap-2 rounded-md"
+                >
+                  <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
+                  {shortAddress(address, 4, 4)}
                 </div>
-              ) : (
-                <div className="flex w-[9.5rem] items-center justify-center gap-2">
-                  <div
-                    onClick={() => {
-                      navigator.clipboard.writeText(address);
-                      toast({ description: "Address copied to clipboard" });
-                    }}
-                    className="flex w-fit items-center justify-center gap-2 rounded-md"
-                  >
-                    <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
-                    {shortAddress(address, 4, 4)}
-                  </div>
 
-                  <X
-                    onClick={() => (disconnect(), disconnectAsync())}
-                    className="size-4 text-[#646498]"
-                  />
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                <X
+                  onClick={() => (disconnect(), disconnectAsync())}
+                  className="size-4 text-[#646498]"
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </header>
   );
