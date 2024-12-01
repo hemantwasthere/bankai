@@ -1,5 +1,7 @@
 pub mod contracts {
     pub mod swap;
+    pub mod vault;
+    pub mod sinf;
 }
 
 pub mod interfaces {
