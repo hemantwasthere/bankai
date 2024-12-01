@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAccount, useBalance, useConnect } from "@starknet-react/core";
 import { Info } from "lucide-react";
-import Link from "next/link";
+import { Figtree } from "next/font/google";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -39,6 +39,10 @@ import { cn, formatNumberWithCommas } from "@/lib/utils";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
+const font = Figtree({
+  subsets: ["latin-ext"],
+});
+
 const formSchema = z.object({
   swapAmount: z.string().refine(
     (v) => {
@@ -50,6 +54,29 @@ const formSchema = z.object({
 });
 
 export type FormValues = z.infer<typeof formSchema>;
+
+const TOKENS = [
+  {
+    label: "xSTRK",
+    value: "xstrk",
+    icon: <Icons.endurLogo className="size-5" />,
+  },
+  {
+    label: "sSTRK",
+    value: "sstrk",
+    icon: <Icons.sSTRKLogo className="size-5" />,
+  },
+  {
+    label: "nstSTRK",
+    value: "nststrk",
+    icon: <Icons.nstSTRKLogo className="size-5" />,
+  },
+  {
+    label: "zend",
+    value: "zend",
+    icon: <Icons.zendLogo className="size-5" />,
+  },
+];
 
 const Swap: React.FC = () => {
   const [selectedToken, setSelectedToken] = React.useState("xstrk");
@@ -200,59 +227,39 @@ const Swap: React.FC = () => {
                 <SelectLabel className="text-xs text-muted-foreground">
                   LST tokens
                 </SelectLabel>
-                <SelectItem
-                  value="xstrk"
-                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "xstrk",
-                  })}
-                >
-                  xSTRK
-                </SelectItem>
-                <SelectItem
-                  value="sstrk"
-                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "sstrk",
-                  })}
-                >
-                  sSTRK
-                </SelectItem>
-                <SelectItem
-                  value="nststrk"
-                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "nststrk",
-                  })}
-                >
-                  nstSTRK
-                </SelectItem>
-                <SelectItem
-                  value="zend"
-                  className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                    "!bg-[#2F2F3F] !text-white/80": selectedToken === "zend",
-                  })}
-                >
-                  zend
-                </SelectItem>
+                {TOKENS.map((token) => (
+                  <SelectItem
+                    key={token.value}
+                    value={token.value}
+                    className={cn(
+                      "gap-2 hover:!bg-[#2F2F3F] hover:!text-white/80",
+                      {
+                        "!bg-[#2F2F3F] !text-white/80":
+                          selectedToken === token.value,
+                      },
+                    )}
+                  >
+                    <div className="flex flex-row items-center gap-2">
+                      {token.icon}
+                      {token.label}
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
 
-          <>
-            <div className="hidden text-[#8D9C9C] lg:block">
-              <button
-                onClick={() => handleQuickStakePrice(100)}
-                className="rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]"
-              >
-                Max
-              </button>
-            </div>
-
+          <div className="text-[#8D9C9C]">
             <button
               onClick={() => handleQuickStakePrice(100)}
-              className="rounded-md bg-[#BBE7E7] px-2 py-1 text-xs font-semibold text-[#215959] transition-all hover:bg-[#BBE7E7] hover:opacity-80 lg:hidden"
+              className={cn(
+                "rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
+                font.className,
+              )}
             >
               Max
             </button>
-          </>
+          </div>
         </div>
 
         <div className="w-full">
@@ -286,7 +293,12 @@ const Swap: React.FC = () => {
                           placeholder="0 xSTRK"
                           {...field}
                         />
-                        <p className="mx-auto w-fit border-none text-sm text-[#7F8287]">
+                        <p
+                          className={cn(
+                            font.className,
+                            "mx-auto w-fit border-none text-sm text-[#7F8287]",
+                          )}
+                        >
                           ≈ <span className="mr-[1px]">$</span>
                           {form.watch("swapAmount")}
                         </p>
@@ -302,7 +314,13 @@ const Swap: React.FC = () => {
 
       <div className="relative w-full">
         <div className="h-0.5 rounded-xl bg-[#262638]" />
-        <button className="absolute -top-[18px] left-1/2 flex -translate-x-1/2 items-center justify-center rounded-xl border-[3px] border-[#262638] bg-[#1A1A2D] p-1.5 transition-all hover:bg-[#1e1e34]">
+        <button
+          onClick={() => {
+            setSelectedToken(swapToken);
+            setSwapToken(selectedToken);
+          }}
+          className="absolute -top-[18px] left-1/2 flex -translate-x-1/2 items-center justify-center rounded-xl border-[3px] border-[#262638] bg-[#1A1A2D] p-1.5 transition-all hover:bg-[#1e1e34]"
+        >
           <Icons.swap className="size-5 text-white/60" />
         </button>
       </div>
@@ -310,7 +328,12 @@ const Swap: React.FC = () => {
       <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pt-6 lg:gap-2">
         <Select
           value={swapToken}
-          onValueChange={setSwapToken}
+          onValueChange={(v) => {
+            if (v !== selectedToken) {
+              setSwapToken(v);
+            }
+            return;
+          }}
           defaultValue="sstrk"
         >
           <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
@@ -321,45 +344,31 @@ const Swap: React.FC = () => {
               <SelectLabel className="text-xs text-muted-foreground">
                 LST tokens
               </SelectLabel>
-              <SelectItem
-                value="xstrk"
-                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                  "!bg-[#2F2F3F] !text-white/80": swapToken === "xstrk",
-                })}
-              >
-                xSTRK
-              </SelectItem>
-              <SelectItem
-                value="sstrk"
-                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                  "!bg-[#2F2F3F] !text-white/80": swapToken === "sstrk",
-                })}
-              >
-                sSTRK
-              </SelectItem>
-              <SelectItem
-                value="nststrk"
-                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                  "!bg-[#2F2F3F] !text-white/80": swapToken === "nststrk",
-                })}
-              >
-                nstSTRK
-              </SelectItem>
-              <SelectItem
-                value="zend"
-                className={cn("hover:!bg-[#2F2F3F] hover:!text-white/80", {
-                  "!bg-[#2F2F3F] !text-white/80": swapToken === "zend",
-                })}
-              >
-                zend
-              </SelectItem>
+              {TOKENS.map((token) => (
+                <SelectItem
+                  key={token.value}
+                  value={token.value}
+                  className={cn(
+                    "gap-2 hover:!bg-[#2F2F3F] hover:!text-white/80",
+                    {
+                      "!bg-[#2F2F3F] !text-white/80": swapToken === token.value,
+                    },
+                  )}
+                >
+                  <div className="flex flex-row items-center gap-2">
+                    {token.icon}
+                    {token.label}
+                  </div>
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
         <div className="flex flex-col items-end">
           <span className="text-white/80">0.968062567 xSTRK</span>
           <span className="text-xs text-[#F25E35]">
-            ≈ <span className="mr-[1px]">$</span>
+            <span className={font.className}> ≈ </span>
+            <span className="mr-[1px]">$</span>
             920390
           </span>
         </div>
@@ -456,7 +465,7 @@ const Swap: React.FC = () => {
             onClick={form.handleSubmit(onSubmit)}
             className="w-full rounded-lg bg-[#395C6A] py-6 text-sm font-semibold text-white/80 transition-all hover:bg-[#34535f] hover:text-white/90 disabled:bg-[#557c8d] disabled:text-white/50 disabled:opacity-80"
           >
-            Buy xSTRK
+            Swap {TOKENS.find((t) => t.value === swapToken)?.label}
           </Button>
         )}
       </div>
