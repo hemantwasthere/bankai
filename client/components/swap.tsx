@@ -72,7 +72,7 @@ const TOKENS = [
     icon: <Icons.nstSTRKLogo className="size-5" />,
   },
   {
-    label: "zend",
+    label: "Zend",
     value: "zend",
     icon: <Icons.zendLogo className="size-5" />,
   },
@@ -216,7 +216,12 @@ const Swap: React.FC = () => {
         <div className="mb-3 flex w-full items-center justify-between">
           <Select
             value={selectedToken}
-            onValueChange={setSelectedToken}
+            onValueChange={(v) => {
+              if (v !== swapToken) {
+                setSelectedToken(v);
+              }
+              return;
+            }}
             defaultValue="xstrk"
           >
             <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
@@ -465,7 +470,8 @@ const Swap: React.FC = () => {
             onClick={form.handleSubmit(onSubmit)}
             className="w-full rounded-lg bg-[#395C6A] py-6 text-sm font-semibold text-white/80 transition-all hover:bg-[#34535f] hover:text-white/90 disabled:bg-[#557c8d] disabled:text-white/50 disabled:opacity-80"
           >
-            Swap {TOKENS.find((t) => t.value === swapToken)?.label}
+            Swap {TOKENS.find((t) => t.value === selectedToken)?.label} to{" "}
+            {TOKENS.find((t) => t.value === swapToken)?.label}
           </Button>
         )}
       </div>
