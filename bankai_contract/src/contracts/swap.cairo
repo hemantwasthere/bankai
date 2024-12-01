@@ -117,6 +117,7 @@ mod Swap {
         fn get_amt_after_fee(ref self: ContractState, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256 ) {
             let token_fees = input_fee + output_fee;
             let fee_const = self.fee_constant.read();
+            // @audit rounding error
             let fees = (from_val * ( token_fees / 1000 )) / fee_const;
              
             ( from_val - fees , fees)
@@ -134,8 +135,10 @@ mod Swap {
             let lst_count = self.lst_num.read();
             self.lstTokens.write(lst_address, lst_data);
             self.lst_num.write(lst_count + 1);
+            // @audit incorrect math
             self.min_liquidity.write((4 * 100) / lst_count + 1);
             self.max_liquidity.write((100 * 100) / lst_count +1);
         }
+        [contracts/swwap] 
     }
 }
