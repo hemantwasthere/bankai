@@ -482,7 +482,7 @@ const Swap: React.FC = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-end text-xs lg:text-base">
           <p className="flex items-center gap-1 text-white/80">
             <span>{Number(form.watch("swapAmount")) ?? 0}</span>
             {TOKENS.find((t) => t.value === swapToken)?.label}
