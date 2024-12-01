@@ -297,7 +297,7 @@ const Swap: React.FC = () => {
             }}
             defaultValue="xstrk"
           >
-            <SelectTrigger className="h-fit w-fit items-start gap-1.5 border-0 py-0 text-white/60 focus:ring-0">
+            <SelectTrigger className="h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
             <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
@@ -435,7 +435,7 @@ const Swap: React.FC = () => {
           }}
           defaultValue="ystrk"
         >
-          <SelectTrigger className="h-fit w-fit items-start gap-1.5 border-0 py-0 text-white/60 focus:ring-0">
+          <SelectTrigger className="h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
             <SelectValue placeholder="Select a fruit" />
           </SelectTrigger>
           <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
