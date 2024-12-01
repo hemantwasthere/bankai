@@ -87,10 +87,73 @@ const Swap: React.FC = () => {
   const [swapToken, setSwapToken] = React.useState("sstrk");
 
   const { address } = useAccount();
-  const { data: balance } = useBalance({
+  const { data: xSTRK_Balance, isPending: xSTRK_Balance_Pending } = useBalance({
     address,
-    token: TOKENS.find((t) => t.value === selectedToken)?.sepoliaAddress,
+    token: XSTRK_TOKEN_SEPOLIA,
   });
+  const { data: sSTRK_Balance, isPending: sSTRK_Balance_Pending } = useBalance({
+    address,
+    token: STRK_TOKEN_SEPOLIA,
+  });
+  const { data: nstsSTRK_Balance, isPending: nstsSTRK_Balance_Pending } =
+    useBalance({
+      address,
+      token: STRK_TOKEN_SEPOLIA,
+    });
+  const { data: Zend_Balance, isPending: Zend_Balance_Pending } = useBalance({
+    address,
+    token: STRK_TOKEN_SEPOLIA,
+  });
+
+  const selectedTokenBalance = React.useMemo(() => {
+    switch (selectedToken) {
+      case "xstrk":
+        return xSTRK_Balance;
+      case "sstrk":
+        return sSTRK_Balance;
+      case "nststrk":
+        return nstsSTRK_Balance;
+      case "zend":
+        return Zend_Balance;
+      default:
+        return xSTRK_Balance;
+    }
+  }, [
+    selectedToken,
+    xSTRK_Balance,
+    sSTRK_Balance,
+    nstsSTRK_Balance,
+    Zend_Balance,
+  ]);
+
+  const getTokenBalance = (token: string) => {
+    if (
+      xSTRK_Balance_Pending ||
+      sSTRK_Balance_Pending ||
+      nstsSTRK_Balance_Pending ||
+      Zend_Balance_Pending
+    ) {
+      return {
+        formatted: "0",
+      };
+    }
+
+    switch (token) {
+      case "xstrk":
+        return xSTRK_Balance;
+      case "sstrk":
+        return sSTRK_Balance;
+      case "nststrk":
+        return nstsSTRK_Balance;
+      case "zend":
+        return Zend_Balance;
+      default:
+        return {
+          formatted: "0",
+        };
+    }
+  };
+
   const { connect: connectSnReact } = useConnect();
 
   const { isMobile } = useSidebar();
@@ -142,34 +205,40 @@ const Swap: React.FC = () => {
       });
     }
 
-    if (balance && percentage === 100) {
-      if (Number(balance?.formatted) < 1) {
+    if (selectedTokenBalance && percentage === 100) {
+      if (Number(selectedTokenBalance?.formatted) < 1) {
         form.setValue("swapAmount", "0");
         form.clearErrors("swapAmount");
         return;
       }
 
-      form.setValue("swapAmount", (Number(balance?.formatted) - 1).toString());
+      form.setValue(
+        "swapAmount",
+        (Number(selectedTokenBalance?.formatted) - 1).toString(),
+      );
       form.clearErrors("swapAmount");
       return;
     }
 
-    if (balance) {
+    if (selectedTokenBalance) {
       form.setValue(
         "swapAmount",
-        ((Number(balance?.formatted) * percentage) / 100).toString(),
+        (
+          (Number(selectedTokenBalance?.formatted) * percentage) /
+          100
+        ).toString(),
       );
       form.clearErrors("swapAmount");
     }
   };
 
   const onSubmit = async (values: FormValues) => {
-    if (Number(values.swapAmount) > Number(balance?.formatted)) {
+    if (Number(values.swapAmount) > Number(selectedTokenBalance?.formatted)) {
       return toast({
         description: (
           <div className="flex items-center gap-2">
             <Info className="size-5" />
-            Insufficient balance
+            Insufficient selectedTokenBalance
           </div>
         ),
       });
@@ -258,7 +327,10 @@ const Swap: React.FC = () => {
                             "flex items-center gap-0.5 text-[11px] text-muted-foreground",
                           )}
                         >
-                          0<span>{token.label}</span>
+                          {Number(
+                            getTokenBalance(token.value)?.formatted,
+                          ).toFixed(2)}
+                          <span>{token.label}</span>
                         </p>
                       </div>
                     </div>
@@ -298,7 +370,7 @@ const Swap: React.FC = () => {
                               "text-red-500":
                                 form.formState.errors.swapAmount ||
                                 Number(form.getValues("swapAmount")) >
-                                  Number(balance?.formatted),
+                                  Number(selectedTokenBalance?.formatted),
                               "max-w-[250px]":
                                 form.watch("swapAmount")?.length > 9,
                               "max-w-[360px]":
@@ -388,7 +460,10 @@ const Swap: React.FC = () => {
                           "flex items-center gap-0.5 text-[11px] text-muted-foreground",
                         )}
                       >
-                        0<span>{token.label}</span>
+                        {Number(
+                          getTokenBalance(token.value)?.formatted,
+                        ).toFixed(2)}
+                        <span>{token.label}</span>
                       </p>
                     </div>
                   </div>

@@ -33,6 +33,8 @@ import {
   userAddressAtom,
 } from "@/store/common.store";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Icons } from "./Icons";
 import { useSidebar } from "./ui/sidebar";
 
@@ -94,6 +96,7 @@ const Navbar = ({ className }: { className?: string }) => {
   const setProvider = useSetAtom(providerAtom);
 
   const { isMobile } = useSidebar();
+  const pathname = usePathname();
 
   const connectorConfig: ConnectOptionsWithConnectors = useMemo(() => {
     return {
@@ -178,7 +181,34 @@ const Navbar = ({ className }: { className?: string }) => {
         className,
       )}
     >
-      <Icons.b className="h-[70px] w-fit" />
+      <div className="flex items-center gap-10">
+        <Icons.b className="h-[70px] w-fit" />
+
+        <div className="flex items-center gap-5">
+          <Link
+            href="/"
+            className={cn(
+              "rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
+              {
+                "bg-[#262638] text-white": pathname === "/",
+              },
+            )}
+          >
+            Swap
+          </Link>
+          <Link
+            href="/liquid"
+            className={cn(
+              "rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
+              {
+                "bg-[#262638] text-white": pathname === "/liquid",
+              },
+            )}
+          >
+            Add liquidity
+          </Link>
+        </div>
+      </div>
       <div
         className={cn(
           "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] text-sm font-bold text-white/70 focus-visible:outline-white",
