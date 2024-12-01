@@ -140,11 +140,11 @@ const AddLiquid: React.FC = () => {
     switch (token) {
       case "xstrk":
         return xSTRK_Balance;
-      case "sstrk":
+      case "ystrk":
         return sSTRK_Balance;
-      case "nststrk":
+      case "zstrk":
         return nstsSTRK_Balance;
-      case "zend":
+      case "dstrk":
         return Zend_Balance;
       default:
         return {

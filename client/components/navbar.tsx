@@ -242,7 +242,7 @@ const Navbar = ({ className }: { className?: string }) => {
 
       <div
         className={cn(
-          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] bg-[#262638] text-sm font-bold text-white/70 focus-visible:outline-white",
+          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] bg-[#262638] text-sm font-bold text-white/70 focus-visible:outline-white md:mr-2",
           {
             "h-[34px]": isMobile,
           },
