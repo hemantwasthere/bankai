@@ -254,17 +254,15 @@ const Swap: React.FC = () => {
             </SelectContent>
           </Select>
 
-          <div className="text-[#8D9C9C]">
-            <button
-              onClick={() => handleQuickStakePrice(100)}
-              className={cn(
-                "rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
-                font.className,
-              )}
-            >
-              Max
-            </button>
-          </div>
+          <button
+            onClick={() => handleQuickStakePrice(100)}
+            className={cn(
+              "rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
+              font.className,
+            )}
+          >
+            Max
+          </button>
         </div>
 
         <div className="w-full">
@@ -371,11 +369,10 @@ const Swap: React.FC = () => {
         </Select>
         <div className="flex flex-col items-end">
           <span className="text-white/80">0.968062567 xSTRK</span>
-          <span className="text-xs text-[#F25E35]">
-            <span className={font.className}> ≈ </span>
-            <span className="mr-[1px]">$</span>
+          <p className={cn(font.className, "text-xs text-[#F25E35]")}>
+            ≈ <span className="mr-[1px]">$</span>
             920390
-          </span>
+          </p>
         </div>
       </div>
 
