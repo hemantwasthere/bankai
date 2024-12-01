@@ -190,7 +190,9 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <div className="flex items-center gap-4 md:gap-10">
-        <Icons.b className="h-[70px] w-fit" />
+        <Link href="/">
+          <Icons.b className="h-[70px] w-fit" />
+        </Link>
 
         <div className="flex items-center justify-center md:hidden">
           <DropdownMenu>
