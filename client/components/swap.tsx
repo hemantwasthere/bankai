@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAccount, useBalance, useConnect } from "@starknet-react/core";
+import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { Figtree } from "next/font/google";
 import React from "react";
@@ -35,8 +36,8 @@ import {
 import { NETWORK, STRK_TOKEN_SEPOLIA, XSTRK_TOKEN_SEPOLIA } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
-
 import { getStrkPrice } from "@/store/common.store";
+
 import { useAtomValue } from "jotai";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
@@ -345,7 +346,14 @@ const Swap: React.FC = () => {
             </SelectContent>
           </Select>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 10,
+            }}
             onClick={() => handleQuickStakePrice(100)}
             className={cn(
               "rounded-xl border border-[#8D9C9C33] bg-[#8D9C9C33] px-2 py-0.5 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
@@ -353,7 +361,7 @@ const Swap: React.FC = () => {
             )}
           >
             Max
-          </button>
+          </motion.button>
         </div>
 
         <div className="w-full">
