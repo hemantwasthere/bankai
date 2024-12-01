@@ -32,7 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NETWORK, STRK_TOKEN_SEPOLIA } from "@/constants";
+import { NETWORK, STRK_TOKEN_SEPOLIA, XSTRK_TOKEN_SEPOLIA } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
 
@@ -59,22 +59,26 @@ const TOKENS = [
   {
     label: "xSTRK",
     value: "xstrk",
-    icon: <Icons.endurLogo className="size-5" />,
+    icon: <Icons.endurLogo className="size-8" />,
+    sepoliaAddress: XSTRK_TOKEN_SEPOLIA,
   },
   {
     label: "sSTRK",
     value: "sstrk",
-    icon: <Icons.sSTRKLogo className="size-5" />,
+    icon: <Icons.sSTRKLogo className="size-8" />,
+    sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
   {
     label: "nstSTRK",
     value: "nststrk",
-    icon: <Icons.nstSTRKLogo className="size-5" />,
+    icon: <Icons.nstSTRKLogo className="size-8" />,
+    sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
   {
     label: "Zend",
     value: "zend",
-    icon: <Icons.zendLogo className="size-5" />,
+    icon: <Icons.zendLogo className="size-8" />,
+    sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
 ];
 
@@ -85,7 +89,7 @@ const Swap: React.FC = () => {
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
-    token: STRK_TOKEN_SEPOLIA,
+    token: TOKENS.find((t) => t.value === selectedToken)?.sepoliaAddress,
   });
   const { connect: connectSnReact } = useConnect();
 
@@ -224,10 +228,10 @@ const Swap: React.FC = () => {
             }}
             defaultValue="xstrk"
           >
-            <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
+            <SelectTrigger className="h-fit w-fit items-start gap-1.5 border-0 py-0 text-white/60 focus:ring-0">
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
-            <SelectContent className="border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
+            <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
               <SelectGroup className="space-y-0.5">
                 <SelectLabel className="text-xs text-muted-foreground">
                   LST tokens
@@ -246,7 +250,17 @@ const Swap: React.FC = () => {
                   >
                     <div className="flex flex-row items-center gap-2">
                       {token.icon}
-                      {token.label}
+                      <div className="flex flex-col items-start">
+                        {token.label}
+                        <p
+                          className={cn(
+                            font.className,
+                            "flex items-center gap-0.5 text-[11px] text-muted-foreground",
+                          )}
+                        >
+                          0<span>{token.label}</span>
+                        </p>
+                      </div>
                     </div>
                   </SelectItem>
                 ))}
@@ -277,10 +291,14 @@ const Swap: React.FC = () => {
                       <div className="relative">
                         <Input
                           className={cn(
-                            "mx-auto h-fit min-w-min max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
+                            "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
                                 form.watch("swapAmount")?.length === 0,
+                              "text-red-500":
+                                form.formState.errors.swapAmount ||
+                                Number(form.getValues("swapAmount")) >
+                                  Number(balance?.formatted),
                               "max-w-[250px]":
                                 form.watch("swapAmount")?.length > 9,
                               "max-w-[360px]":
@@ -293,7 +311,9 @@ const Swap: React.FC = () => {
                                 form.watch("swapAmount")?.length > 21,
                             },
                           )}
-                          placeholder="0 xSTRK"
+                          placeholder={`0 ${
+                            TOKENS.find((t) => t.value === selectedToken)?.label
+                          }`}
                           {...field}
                         />
                         <p
@@ -328,7 +348,7 @@ const Swap: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pt-6 lg:gap-2">
+      <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pb-7 lg:gap-2">
         <Select
           value={swapToken}
           onValueChange={(v) => {
@@ -339,10 +359,10 @@ const Swap: React.FC = () => {
           }}
           defaultValue="sstrk"
         >
-          <SelectTrigger className="w-fit gap-1.5 border-0 text-white/60 focus:ring-0">
+          <SelectTrigger className="h-fit w-fit items-start gap-1.5 border-0 py-0 text-white/60 focus:ring-0">
             <SelectValue placeholder="Select a fruit" />
           </SelectTrigger>
-          <SelectContent className="border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
+          <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
             <SelectGroup className="space-y-0.5">
               <SelectLabel className="text-xs text-muted-foreground">
                 LST tokens
@@ -360,7 +380,17 @@ const Swap: React.FC = () => {
                 >
                   <div className="flex flex-row items-center gap-2">
                     {token.icon}
-                    {token.label}
+                    <div className="flex flex-col items-start">
+                      {token.label}
+                      <p
+                        className={cn(
+                          font.className,
+                          "flex items-center gap-0.5 text-[11px] text-muted-foreground",
+                        )}
+                      >
+                        0<span>{token.label}</span>
+                      </p>
+                    </div>
                   </div>
                 </SelectItem>
               ))}
@@ -368,7 +398,9 @@ const Swap: React.FC = () => {
           </SelectContent>
         </Select>
         <div className="flex flex-col items-end">
-          <span className="text-white/80">0.968062567 xSTRK</span>
+          <span className="text-white/80">
+            0.968062567 {TOKENS.find((t) => t.value === swapToken)?.label}
+          </span>
           <p className={cn(font.className, "text-xs text-[#F25E35]")}>
             ≈ <span className="mr-[1px]">$</span>
             920390
@@ -398,7 +430,7 @@ const Swap: React.FC = () => {
             {form.watch("swapAmount")
               ? formatNumberWithCommas(Number(form.watch("swapAmount")))
               : 0}{" "}
-            xSTRK
+            {TOKENS.find((t) => t.value === swapToken)?.label}
           </span>
         </div>
 
@@ -420,7 +452,10 @@ const Swap: React.FC = () => {
             </TooltipProvider>
           </div>
 
-          <span>1 STRK = 1.2 xSTRK</span>
+          <span>
+            1 {TOKENS.find((t) => t.value === selectedToken)?.label} = 1.2{" "}
+            {TOKENS.find((t) => t.value === swapToken)?.label}
+          </span>
         </div>
 
         <div className="flex items-center justify-between rounded-md text-xs font-medium text-[#939494] lg:text-[13px]">
