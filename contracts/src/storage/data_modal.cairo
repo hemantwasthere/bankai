@@ -8,6 +8,7 @@ pub struct SwapFees {
 
 #[derive(Drop, Copy, Serde, starknet::Store)]
 pub struct LST {
+    pub lst_id: u256,
     pub token_address: ContractAddress,
     pub fees: SwapFees,
 }
