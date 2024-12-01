@@ -185,7 +185,7 @@ const Navbar = ({ className }: { className?: string }) => {
   return (
     <header
       className={cn(
-        "flex w-full items-start justify-between p-3 pt-4",
+        "flex w-full items-center justify-between p-3 pt-4",
         className,
       )}
     >
@@ -197,7 +197,10 @@ const Navbar = ({ className }: { className?: string }) => {
             <DropdownMenuTrigger>
               <Menu className="size-7 text-[#A7A7AD]" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-[#303054] bg-[#262638] text-white/80">
+            <DropdownMenuContent
+              side="bottom"
+              className="ml-16 mt-2 border-[#303054] bg-[#262638] text-white/80"
+            >
               <DropdownMenuItem className="cursor-pointer hover:bg-[#262638] hover:text-white/80">
                 <Link href="/">Swap</Link>
               </DropdownMenuItem>
@@ -234,9 +237,10 @@ const Navbar = ({ className }: { className?: string }) => {
           </Link>
         </div>
       </div>
+
       <div
         className={cn(
-          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] text-sm font-bold text-white/70 focus-visible:outline-white",
+          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] bg-[#262638] text-sm font-bold text-white/70 focus-visible:outline-white",
           {
             "h-[34px]": isMobile,
           },

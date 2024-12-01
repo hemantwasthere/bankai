@@ -337,7 +337,7 @@ const WithdrawLiquid: React.FC = () => {
           <button
             onClick={() => handleQuickStakePrice(100)}
             className={cn(
-              "rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
+              "rounded-xl border border-[#8D9C9C33] bg-[#8D9C9C33] px-2 py-0.5 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
               font.className,
             )}
           >
@@ -357,6 +357,7 @@ const WithdrawLiquid: React.FC = () => {
                       <div className="relative">
                         <Input
                           className={cn(
+                            font.className,
                             "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
@@ -389,7 +390,9 @@ const WithdrawLiquid: React.FC = () => {
                           )}
                         >
                           ≈ <span className="mr-[1px]">$</span>
-                          {form.watch("swapAmount")}
+                          {form.watch("swapAmount")
+                            ? Number(form.watch("swapAmount")).toFixed(4)
+                            : 0}
                         </p>
                       </div>
                     </FormControl>

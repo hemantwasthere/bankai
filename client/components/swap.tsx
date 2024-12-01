@@ -238,7 +238,7 @@ const Swap: React.FC = () => {
         description: (
           <div className="flex items-center gap-2">
             <Info className="size-5" />
-            Insufficient selectedTokenBalance
+            Insufficient selected token balance
           </div>
         ),
       });
@@ -279,9 +279,9 @@ const Swap: React.FC = () => {
   return (
     <div className="h-fit w-full rounded-xl border border-[#303054] bg-[#262638] px-6 py-3">
       <div className="mt-3">
-        <h4 className="text-xl font-semibold text-white">Trade LSTs</h4>
+        <h4 className="text-xl font-semibold text-white">Swap LSTs</h4>
         <p className="mt-1 text-sm font-medium text-muted-foreground">
-          Buy and sell your favourite LSTs
+          Swap LST tokens with ease
         </p>
       </div>
 
@@ -343,7 +343,7 @@ const Swap: React.FC = () => {
           <button
             onClick={() => handleQuickStakePrice(100)}
             className={cn(
-              "rounded-xl border border-[#8D9C9C33] px-2 py-1 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
+              "rounded-xl border border-[#8D9C9C33] bg-[#8D9C9C33] px-2 py-0.5 text-xs font-semibold text-[#8D9C9C] transition-all hover:bg-[#8D9C9C33]",
               font.className,
             )}
           >
@@ -363,6 +363,7 @@ const Swap: React.FC = () => {
                       <div className="relative">
                         <Input
                           className={cn(
+                            font.className,
                             "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
@@ -395,7 +396,9 @@ const Swap: React.FC = () => {
                           )}
                         >
                           ≈ <span className="mr-[1px]">$</span>
-                          {form.watch("swapAmount")}
+                          {form.watch("swapAmount")
+                            ? Number(form.watch("swapAmount")).toFixed(4)
+                            : 0}
                         </p>
                       </div>
                     </FormControl>
@@ -528,7 +531,7 @@ const Swap: React.FC = () => {
           </div>
 
           <span>
-            1 {TOKENS.find((t) => t.value === selectedToken)?.label} = 1.2{" "}
+            1 {TOKENS.find((t) => t.value === selectedToken)?.label} = 1{" "}
             {TOKENS.find((t) => t.value === swapToken)?.label}
           </span>
         </div>
