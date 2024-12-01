@@ -9,7 +9,8 @@ import {
   useSwitchChain,
 } from "@starknet-react/core";
 import { useAtom, useSetAtom } from "jotai";
-import { X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
 import React, { useMemo } from "react";
 import { constants, num } from "starknet";
 import {
@@ -24,6 +25,14 @@ import {
 } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { getProvider, NETWORK } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, shortAddress } from "@/lib/utils";
@@ -33,7 +42,6 @@ import {
   userAddressAtom,
 } from "@/store/common.store";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icons } from "./Icons";
 import { useSidebar } from "./ui/sidebar";
@@ -181,10 +189,27 @@ const Navbar = ({ className }: { className?: string }) => {
         className,
       )}
     >
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-4 md:gap-10">
         <Icons.b className="h-[70px] w-fit" />
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-center md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Menu className="size-7 text-[#A7A7AD]" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="border-[#303054] bg-[#262638] text-white/80">
+              <DropdownMenuItem className="cursor-pointer hover:bg-[#262638] hover:text-white/80">
+                <Link href="/">Swap</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-[#303054] hover:bg-[#262638] hover:text-white/80" />
+              <DropdownMenuItem className="cursor-pointer hover:bg-[#262638] hover:text-white/80">
+                <Link href="/liquid">liquidity</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="hidden items-center gap-5 md:flex">
           <Link
             href="/"
             className={cn(
@@ -205,7 +230,7 @@ const Navbar = ({ className }: { className?: string }) => {
               },
             )}
           >
-            Add liquidity
+            Liquidity
           </Link>
         </div>
       </div>
