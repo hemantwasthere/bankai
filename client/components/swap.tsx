@@ -63,28 +63,28 @@ const TOKENS = [
     sepoliaAddress: XSTRK_TOKEN_SEPOLIA,
   },
   {
-    label: "sSTRK",
-    value: "sstrk",
-    icon: <Icons.sSTRKLogo className="size-8" />,
+    label: "ySTRK",
+    value: "ystrk",
+    icon: <Icons.ySTRKLogo className="size-8" />,
     sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
   {
-    label: "nstSTRK",
-    value: "nststrk",
-    icon: <Icons.nstSTRKLogo className="size-8" />,
+    label: "zSTRK",
+    value: "zstrk",
+    icon: <Icons.zSTRKLogo className="size-8" />,
     sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
   {
-    label: "Zend",
-    value: "zend",
-    icon: <Icons.zendLogo className="size-8" />,
+    label: "dSTRK",
+    value: "dstrk",
+    icon: <Icons.dSTRKLogo className="size-8" />,
     sepoliaAddress: STRK_TOKEN_SEPOLIA,
   },
 ];
 
 const Swap: React.FC = () => {
   const [selectedToken, setSelectedToken] = React.useState("xstrk");
-  const [swapToken, setSwapToken] = React.useState("sstrk");
+  const [swapToken, setSwapToken] = React.useState("ystrk");
 
   const { address } = useAccount();
   const { data: xSTRK_Balance, isPending: xSTRK_Balance_Pending } = useBalance({
@@ -109,11 +109,11 @@ const Swap: React.FC = () => {
     switch (selectedToken) {
       case "xstrk":
         return xSTRK_Balance;
-      case "sstrk":
+      case "ystrk":
         return sSTRK_Balance;
-      case "nststrk":
+      case "zstrk":
         return nstsSTRK_Balance;
-      case "zend":
+      case "dstrk":
         return Zend_Balance;
       default:
         return xSTRK_Balance;
@@ -141,11 +141,11 @@ const Swap: React.FC = () => {
     switch (token) {
       case "xstrk":
         return xSTRK_Balance;
-      case "sstrk":
+      case "ystrk":
         return sSTRK_Balance;
-      case "nststrk":
+      case "zstrk":
         return nstsSTRK_Balance;
-      case "zend":
+      case "dstrk":
         return Zend_Balance;
       default:
         return {
@@ -308,6 +308,7 @@ const Swap: React.FC = () => {
                 {TOKENS.map((token) => (
                   <SelectItem
                     key={token.value}
+                    disabled={token.value === swapToken}
                     value={token.value}
                     className={cn(
                       "gap-2 hover:!bg-[#2F2F3F] hover:!text-white/80",
@@ -432,7 +433,7 @@ const Swap: React.FC = () => {
             }
             return;
           }}
-          defaultValue="sstrk"
+          defaultValue="ystrk"
         >
           <SelectTrigger className="h-fit w-fit items-start gap-1.5 border-0 py-0 text-white/60 focus:ring-0">
             <SelectValue placeholder="Select a fruit" />
@@ -445,6 +446,7 @@ const Swap: React.FC = () => {
               {TOKENS.map((token) => (
                 <SelectItem
                   key={token.value}
+                  disabled={token.value === selectedToken}
                   value={token.value}
                   className={cn(
                     "gap-2 hover:!bg-[#2F2F3F] hover:!text-white/80",
