@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 import AddLiquid from "@/components/add-liquid";
 import Navbar from "@/components/navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +12,12 @@ export default function Home() {
     <div className="flex h-screen w-full flex-col bg-[#1A1A2D]">
       <Navbar />
 
-      <div className="m-auto flex h-full w-full max-w-xl items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0.2 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="m-auto flex h-full w-full max-w-xl items-center justify-center"
+      >
         <Tabs defaultValue="add" className="w-full">
           <TabsList className="mb-3 space-x-3 bg-transparent">
             <TabsTrigger
@@ -31,7 +40,7 @@ export default function Home() {
             <WithdrawLiquid />
           </TabsContent>
         </Tabs>
-      </div>
+      </motion.div>
     </div>
   );
 }
