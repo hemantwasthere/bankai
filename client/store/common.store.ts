@@ -3,6 +3,8 @@ import { atomWithQuery } from "jotai-tanstack-query";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
 import { Provider } from "starknet";
 
+import MyNumber from "@/lib/MyNumber";
+
 export const providerAtom = atom<Provider | null>(null);
 
 export const currentBlockAtom = atom(async (get) => {
@@ -28,6 +30,16 @@ export const strkPriceAtom = atomWithQuery((get) => {
       }
     },
     refetchInterval: 60000,
+  };
+});
+
+export const getStrkPrice = atom((get) => {
+  const { data, error } = get(strkPriceAtom);
+
+  return {
+    value: error || !data ? MyNumber.fromZero() : data,
+    error,
+    isLoading: !data && !error,
   };
 });
 

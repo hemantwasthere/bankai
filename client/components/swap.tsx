@@ -36,6 +36,8 @@ import { NETWORK, STRK_TOKEN_SEPOLIA, XSTRK_TOKEN_SEPOLIA } from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
 
+import { getStrkPrice } from "@/store/common.store";
+import { useAtomValue } from "jotai";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
@@ -87,6 +89,10 @@ const Swap: React.FC = () => {
   const [swapToken, setSwapToken] = React.useState("ystrk");
 
   const { address } = useAccount();
+  const { connect: connectSnReact } = useConnect();
+
+  const strkPrice = useAtomValue(getStrkPrice);
+
   const { data: xSTRK_Balance, isPending: xSTRK_Balance_Pending } = useBalance({
     address,
     token: XSTRK_TOKEN_SEPOLIA,
@@ -153,8 +159,6 @@ const Swap: React.FC = () => {
         };
     }
   };
-
-  const { connect: connectSnReact } = useConnect();
 
   const { isMobile } = useSidebar();
 
@@ -398,7 +402,8 @@ const Swap: React.FC = () => {
                         >
                           ≈ <span className="mr-[1px]">$</span>
                           {form.watch("swapAmount")
-                            ? Number(form.watch("swapAmount")).toFixed(4)
+                            ? Number(form.watch("swapAmount")) *
+                              Number(strkPrice.value)
                             : 0}
                         </p>
                       </div>
@@ -424,7 +429,7 @@ const Swap: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pb-7 lg:gap-2">
+      <div className="flex w-full items-center justify-between rounded-xl rounded-t-none bg-[#1A1A2D] p-4 pb-7 pt-5 lg:gap-2">
         <Select
           value={swapToken}
           onValueChange={(v) => {
@@ -478,12 +483,15 @@ const Swap: React.FC = () => {
           </SelectContent>
         </Select>
         <div className="flex flex-col items-end">
-          <span className="text-white/80">
-            0.968062567 {TOKENS.find((t) => t.value === swapToken)?.label}
-          </span>
+          <p className="flex items-center gap-1 text-white/80">
+            <span>{Number(form.watch("swapAmount")) ?? 0}</span>
+            {TOKENS.find((t) => t.value === swapToken)?.label}
+          </p>
           <p className={cn(font.className, "text-xs text-[#F25E35]")}>
             ≈ <span className="mr-[1px]">$</span>
-            920390
+            {form.watch("swapAmount")
+              ? Number(form.watch("swapAmount")) * Number(strkPrice.value)
+              : 0}
           </p>
         </div>
       </div>
