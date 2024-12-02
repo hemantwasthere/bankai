@@ -190,7 +190,7 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <div className="flex items-center gap-4 md:gap-10">
-        <Link href="/">
+        <Link href="/" className="offset_ring rounded-full">
           <Icons.b className="h-[70px] w-fit" />
         </Link>
 
@@ -203,11 +203,11 @@ const Navbar = ({ className }: { className?: string }) => {
               side="bottom"
               className="ml-16 mt-2 border-[#303054] bg-[#262638] text-white/80"
             >
-              <DropdownMenuItem className="cursor-pointer hover:bg-[#262638] hover:text-white/80">
+              <DropdownMenuItem className="offset_ring cursor-pointer rounded-md hover:bg-[#262638] hover:text-white/80">
                 <Link href="/">Swap</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-[#303054] hover:bg-[#262638] hover:text-white/80" />
-              <DropdownMenuItem className="cursor-pointer hover:bg-[#262638] hover:text-white/80">
+              <DropdownMenuItem className="offset_ring cursor-pointer rounded-md hover:bg-[#262638] hover:text-white/80">
                 <Link href="/liquid">liquidity</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -218,7 +218,7 @@ const Navbar = ({ className }: { className?: string }) => {
           <Link
             href="/"
             className={cn(
-              "rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
+              "offset_ring rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
               {
                 "bg-[#262638] text-white": pathname === "/",
               },
@@ -229,7 +229,7 @@ const Navbar = ({ className }: { className?: string }) => {
           <Link
             href="/liquid"
             className={cn(
-              "rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
+              "offset_ring rounded-md px-4 py-1.5 text-[#A7A7AD] transition-all hover:bg-[#262638] hover:text-white",
               {
                 "bg-[#262638] text-white": pathname === "/liquid",
               },
@@ -241,8 +241,14 @@ const Navbar = ({ className }: { className?: string }) => {
       </div>
 
       <div
+        tabIndex={!address ? 0 : 1}
+        onKeyDown={(e: any) => {
+          if (!address && (e.key === "Enter" || e.key === "Space")) {
+            connectWallet();
+          }
+        }}
         className={cn(
-          "flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] bg-[#262638] text-sm font-bold text-white/70 focus-visible:outline-white md:mr-2",
+          "offset_ring flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#303054] bg-[#262638] text-sm font-bold text-white/70 focus-visible:outline-white md:mr-2",
           {
             "h-[34px]": isMobile,
           },
@@ -270,7 +276,7 @@ const Navbar = ({ className }: { className?: string }) => {
                       description: "Address copied to clipboard",
                     });
                   }}
-                  className="flex h-9 items-center justify-center gap-2 rounded-md"
+                  className="offset_ring flex h-9 items-center justify-center gap-2 rounded-md"
                 >
                   <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
                   <p className="flex items-center gap-1 text-sm">
@@ -278,28 +284,32 @@ const Navbar = ({ className }: { className?: string }) => {
                   </p>
                 </button>
 
-                <X
+                <button
+                  className="offset_ring rounded-full"
                   onClick={() => (disconnect(), disconnectAsync())}
-                  className="size-4 text-[#646498]"
-                />
+                >
+                  <X tabIndex={6} className="size-4 text-[#646498]" />
+                </button>
               </div>
             ) : (
               <div className="flex w-[11rem] items-center justify-center gap-2">
-                <div
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(address);
                     toast({ description: "Address copied to clipboard" });
                   }}
-                  className="flex w-fit items-center justify-center gap-2 rounded-md"
+                  className="offset_ring flex w-fit items-center justify-center gap-2 rounded-md"
                 >
                   <div className="size-5 rounded-full bg-gradient-to-b from-[#454571] to-white/60" />
                   {shortAddress(address, 4, 4)}
-                </div>
+                </button>
 
-                <X
+                <button
+                  className="offset_ring rounded-full"
                   onClick={() => (disconnect(), disconnectAsync())}
-                  className="size-4 text-[#646498]"
-                />
+                >
+                  <X tabIndex={6} className="size-4 text-[#646498]" />
+                </button>
               </div>
             )}
           </>

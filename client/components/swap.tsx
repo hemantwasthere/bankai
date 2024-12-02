@@ -1,7 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAccount, useBalance, useConnect } from "@starknet-react/core";
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useSendTransaction,
+} from "@starknet-react/core";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { Figtree } from "next/font/google";
@@ -14,6 +19,8 @@ import {
 } from "starknetkit";
 import * as z from "zod";
 
+import erc4626Abi from "@/abi/erc4626.abi.json";
+import swapContractAbi from "@/abi/swap.abi.json";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -33,12 +40,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NETWORK, STRK_TOKEN_SEPOLIA, XSTRK_TOKEN_SEPOLIA } from "@/constants";
+import {
+  D_STRK_TOKEN_SEPOLIA,
+  NETWORK,
+  STRK_TOKEN_SEPOLIA,
+  SWAP_CONTRACT_SEPOLIA,
+  XSTRK_TOKEN_SEPOLIA,
+  Y_STRK_TOKEN_SEPOLIA,
+  Z_STRK_TOKEN_SEPOLIA,
+} from "@/constants";
 import { toast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
 import { getStrkPrice } from "@/store/common.store";
 
+import MyNumber from "@/lib/MyNumber";
 import { useAtomValue } from "jotai";
+import { Contract } from "starknet";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
@@ -69,19 +86,19 @@ const TOKENS = [
     label: "ySTRK",
     value: "ystrk",
     icon: <Icons.ySTRKLogo className="size-8" />,
-    sepoliaAddress: STRK_TOKEN_SEPOLIA,
+    sepoliaAddress: Y_STRK_TOKEN_SEPOLIA,
   },
   {
     label: "zSTRK",
     value: "zstrk",
     icon: <Icons.zSTRKLogo className="size-8" />,
-    sepoliaAddress: STRK_TOKEN_SEPOLIA,
+    sepoliaAddress: Z_STRK_TOKEN_SEPOLIA,
   },
   {
     label: "dSTRK",
     value: "dstrk",
     icon: <Icons.dSTRKLogo className="size-8" />,
-    sepoliaAddress: STRK_TOKEN_SEPOLIA,
+    sepoliaAddress: D_STRK_TOKEN_SEPOLIA,
   },
 ];
 
@@ -91,6 +108,7 @@ const Swap: React.FC = () => {
 
   const { address } = useAccount();
   const { connect: connectSnReact } = useConnect();
+  const { sendAsync } = useSendTransaction({});
 
   const strkPrice = useAtomValue(getStrkPrice);
 
@@ -98,18 +116,20 @@ const Swap: React.FC = () => {
     address,
     token: XSTRK_TOKEN_SEPOLIA,
   });
-  const { data: sSTRK_Balance, isPending: sSTRK_Balance_Pending } = useBalance({
+
+  const { data: ySTRK_Balance, isPending: ySTRK_Balance_Pending } = useBalance({
     address,
-    token: STRK_TOKEN_SEPOLIA,
+    token: Y_STRK_TOKEN_SEPOLIA,
   });
-  const { data: nstsSTRK_Balance, isPending: nstsSTRK_Balance_Pending } =
-    useBalance({
-      address,
-      token: STRK_TOKEN_SEPOLIA,
-    });
-  const { data: Zend_Balance, isPending: Zend_Balance_Pending } = useBalance({
+
+  const { data: zSTRK_Balance, isPending: zSTRK_Balance_Pending } = useBalance({
     address,
-    token: STRK_TOKEN_SEPOLIA,
+    token: Z_STRK_TOKEN_SEPOLIA,
+  });
+
+  const { data: dSTRK_Balance, isPending: dSTRK_Balance_Pending } = useBalance({
+    address,
+    token: D_STRK_TOKEN_SEPOLIA,
   });
 
   const selectedTokenBalance = React.useMemo(() => {
@@ -117,28 +137,28 @@ const Swap: React.FC = () => {
       case "xstrk":
         return xSTRK_Balance;
       case "ystrk":
-        return sSTRK_Balance;
+        return ySTRK_Balance;
       case "zstrk":
-        return nstsSTRK_Balance;
+        return zSTRK_Balance;
       case "dstrk":
-        return Zend_Balance;
+        return dSTRK_Balance;
       default:
         return xSTRK_Balance;
     }
   }, [
     selectedToken,
     xSTRK_Balance,
-    sSTRK_Balance,
-    nstsSTRK_Balance,
-    Zend_Balance,
+    ySTRK_Balance,
+    zSTRK_Balance,
+    dSTRK_Balance,
   ]);
 
   const getTokenBalance = (token: string) => {
     if (
       xSTRK_Balance_Pending ||
-      sSTRK_Balance_Pending ||
-      nstsSTRK_Balance_Pending ||
-      Zend_Balance_Pending
+      ySTRK_Balance_Pending ||
+      zSTRK_Balance_Pending ||
+      dSTRK_Balance_Pending
     ) {
       return {
         formatted: "0",
@@ -149,11 +169,11 @@ const Swap: React.FC = () => {
       case "xstrk":
         return xSTRK_Balance;
       case "ystrk":
-        return sSTRK_Balance;
+        return ySTRK_Balance;
       case "zstrk":
-        return nstsSTRK_Balance;
+        return zSTRK_Balance;
       case "dstrk":
-        return Zend_Balance;
+        return dSTRK_Balance;
       default:
         return {
           formatted: "0",
@@ -260,25 +280,48 @@ const Swap: React.FC = () => {
       });
     }
 
-    // const call1 = contractSTRK.populate("approve", [
-    //   contract.address,
-    //   MyNumber.fromEther(values.stakeAmount, 18),
+    const contractSTRK = new Contract(erc4626Abi, STRK_TOKEN_SEPOLIA);
+
+    const selectedTokenSepoliaAddress = TOKENS.find(
+      (t) => t.value === selectedToken,
+    )?.sepoliaAddress!;
+
+    const swapTokenSepoliaAddress = TOKENS.find(
+      (t) => t.value === swapToken,
+    )?.sepoliaAddress!;
+
+    const selectedTokenContract = new Contract(
+      erc4626Abi,
+      selectedTokenSepoliaAddress,
+    );
+
+    const swapContract = new Contract(swapContractAbi, SWAP_CONTRACT_SEPOLIA);
+
+    const call1 = selectedTokenContract.populate("approve", [
+      swapContract.address,
+      MyNumber.fromEther(values.swapAmount, 18),
+    ]);
+
+    const call2 = swapContract.populate("swap", [
+      selectedTokenSepoliaAddress,
+      swapTokenSepoliaAddress,
+      MyNumber.fromEther(values.swapAmount, 18),
+    ]);
+
+    await sendAsync([call1, call2]);
+
+    // const call2 = selectedTokenContract.populate("deposit", [
+    //   MyNumber.fromEther(values.swapAmount, 18),
+    //   // TOKENS.find((t) => t.value === selectedToken)?.sepoliaAddress!,
+    //   address,
     // ]);
 
-    // if (referrer) {
-    //   const call2 = contract.populate("deposit_with_referral", [
-    //     MyNumber.fromEther(values.stakeAmount, 18),
-    //     address,
-    //     referrer,
-    //   ]);
-    //   await sendAsync([call1, call2]);
-    // } else {
-    //   const call2 = contract.populate("deposit", [
-    //     MyNumber.fromEther(values.stakeAmount, 18),
-    //     address,
-    //   ]);
-    //   await sendAsync([call1, call2]);
-    // }
+    //  const call1 = selectedTokenContract.populate("approve", [
+    //   selectedTokenSepoliaAddress,
+    //   MyNumber.fromEther(values.swapAmount, 18),
+    // ]);
+
+    // await sendAsync([call1, call2]);
   };
 
   return (
@@ -302,7 +345,7 @@ const Swap: React.FC = () => {
             }}
             defaultValue="xstrk"
           >
-            <SelectTrigger className="h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
+            <SelectTrigger className="offset_ring h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
             <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">
@@ -448,7 +491,7 @@ const Swap: React.FC = () => {
           }}
           defaultValue="ystrk"
         >
-          <SelectTrigger className="h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
+          <SelectTrigger className="offset_ring h-fit w-fit items-start border-0 py-0 text-white/60 focus:ring-0">
             <SelectValue placeholder="Select a fruit" />
           </SelectTrigger>
           <SelectContent className="w-56 border-[#2F2F3F] bg-[#222233] text-[#A7A7AD]">

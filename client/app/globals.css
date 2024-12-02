@@ -48,6 +48,9 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  .offset_ring {
+    @apply outline-none !ring-[#e9e8e8] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
