@@ -121,7 +121,7 @@ mod Swap {
                 from_add,
                 fee_collector,
                 fees
-            )
+            );
             ERC20Helper::strict_transfer_from(
                 from_add,
                 this, 
@@ -233,7 +233,9 @@ mod Swap {
             loop {
                 if(count <= lst_addresses.len()) {
                     let curr_addr = *lst_addresses.at(count);
-                    ERC20Helper::strict_transfer_from(curr_addr, caller, this, token_amount);
+                    let lst_amt = IERC4626Dispatcher {contract_address: curr_addr}
+                    .convert_to_shares(token_amount);
+                    ERC20Helper::strict_transfer_from(curr_addr, caller, this, lst_amt);
                     count += 1;
                 } else {
                     break;
