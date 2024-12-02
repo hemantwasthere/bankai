@@ -44,7 +44,7 @@ mod Swap {
         max_liquidity: u256,
         fee_constant: u256,
         fee_collector: ContractAddress,
-        
+
     }
 
     #[event]
@@ -159,6 +159,7 @@ mod Swap {
         fn add_lst(ref self: ContractState, lst_address: ContractAddress) {
             let this = get_contract_address();
             let caller = get_caller_address();
+            self.reng.start();
             self.ownable.assert_only_owner();
             let lst_count = self.lst_num.read();
             let lst_data = LST {
@@ -184,6 +185,8 @@ mod Swap {
             let min_liquidity = (new_lst_val * min_liq) / 100;
 
             ERC20Helper::strict_transfer_from(lst_address, caller, this, min_liquidity);
+
+            self.reng.end();
         }
 
         fn total_liquidity(ref self: ContractState) -> u256 {
@@ -230,6 +233,7 @@ mod Swap {
         fn init_pool_creation(ref self: ContractState, token_amount: u256) {
             let this = get_contract_address();
             let caller = get_caller_address();
+            self.reng.start();
             self.ownable.assert_only_owner();
             let mut count = 0;
             loop {
@@ -243,6 +247,7 @@ mod Swap {
                     break;
                 }
             };
+            self.reng.end();
         }
     }
 }
