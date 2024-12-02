@@ -4,10 +4,10 @@ use bankai_contract::storage::data_modal::{SwapFees, LST};
 #[starknet::interface]
 pub trait ISwapStrat<T> {
     fn swap(ref self: T, from_add: ContractAddress, to_add: ContractAddress, from_amt: u256);
-    fn get_LST_data(ref self: T, token: ContractAddress) -> LST; 
-    fn get_amt_after_fee(ref self: T, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256);
+    fn get_LST_data(self: @T, token: ContractAddress) -> LST; 
+    fn get_amt_after_fee(self: @T, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256);
     fn add_lst(ref self: T, lst_address: ContractAddress);
-    fn total_liquidity(ref self: T) -> u256;
+    fn total_liquidity(self: @T) -> u256;
     fn set_fees(ref self: T, lst_address: ContractAddress);
     fn init_pool_creation(ref self: T, token_amount: u256);
 }
@@ -118,14 +118,8 @@ mod Swap {
                 to_data.fees.output_fee
             );
             let fee_collector = self.fee_collector.read();
-            ERC20Helper::approve(
+            ERC20Helper::strict_transfer(
                 from_add,
-                fee_collector,
-                fees
-            );
-            ERC20Helper::strict_transfer_from(
-                from_add,
-                this, 
                 fee_collector,
                 fees
             );
@@ -143,11 +137,11 @@ mod Swap {
             self.reng.end();
         }
 
-        fn get_LST_data(ref self: ContractState, token: ContractAddress) -> LST {
+        fn get_LST_data(self: @ContractState, token: ContractAddress) -> LST {
             self.lst_tokens.read(token)
         }
 
-        fn get_amt_after_fee(ref self: ContractState, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256 ) {
+        fn get_amt_after_fee(self: @ContractState, from_val: u256, input_fee: u256, output_fee: u256) -> (u256, u256 ) {
             let token_fees = input_fee + output_fee;
             let fee_const = self.fee_constant.read();
             // @audit rounding error
@@ -189,7 +183,7 @@ mod Swap {
             self.reng.end();
         }
 
-        fn total_liquidity(ref self: ContractState) -> u256 {
+        fn total_liquidity(self: @ContractState) -> u256 {
             let this = get_contract_address();
             let total_lst = self.lst_num.read();
             let mut count = 0; 
@@ -221,8 +215,18 @@ mod Swap {
             let max_bps = self.max_liquidity.read();
 
             // fees formulation 
-            let input_fees = ((liq_bps - min_bps) * 10) / (max_bps - min_bps);
-            let output_fees = ((max_bps - liq_bps) * 10) / (max_bps - min_bps);
+            let mut input_fees = 0;
+            let mut output_fees = 0;
+            if(liq_bps > max_bps) {
+                input_fees = 10;
+                output_fees = 0;
+            } else if (liq_bps < min_bps) {
+                input_fees = 0;
+                output_fees = 10;
+            } else {
+                input_fees = ((liq_bps - min_bps) * 10) / (max_bps - min_bps);
+                output_fees = ((max_bps - liq_bps) * 10) / (max_bps - min_bps);
+            }
 
             let mut lst = self.get_LST_data(lst_address);
             lst.fees.input_fee = input_fees;
