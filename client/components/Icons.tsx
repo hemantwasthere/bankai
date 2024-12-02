@@ -702,34 +702,33 @@ export const Icons = {
   toastPending: (props: IconProps) => (
     <svg
       {...props}
-      width="75"
+      width="74"
       height="75"
       viewBox="0 0 74 75"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g filter="url(#filter0_d_181_2422)">
-        <circle cx="37" cy="37" r="25" fill="#BBC2CC" />
+      <g filter="url(#filter0_d_15_2)">
+        <circle cx="37" cy="37" r="25" fill="#33334E" />
       </g>
-      <circle cx="37" cy="37" r="30.5" stroke="#DBE3EE" />
-      <circle cx="37" cy="37" r="36.75" stroke="#EBF2FC" stroke-width="0.5" />
+      <circle cx="37" cy="37" r="30.5" stroke="#2B2B33" />
+      <circle cx="37" cy="37" r="36.75" stroke="#535383" stroke-width="0.5" />
       <path
         d="M68.8458 55.8374C65.4717 61.5416 60.6274 66.2348 54.8192 69.4266C49.0111 72.6183 42.4522 74.1914 35.8281 73.9815"
-        className=""
-        stroke="#BBC2CC"
+        stroke="#9191E8"
         stroke-width="2"
         stroke-linecap="round"
       />
       <path
         d="M37 33V37L40 40M46 37C46 38.1819 45.7672 39.3522 45.3149 40.4442C44.8626 41.5361 44.1997 42.5282 43.364 43.364C42.5282 44.1997 41.5361 44.8626 40.4442 45.3149C39.3522 45.7672 38.1819 46 37 46C35.8181 46 34.6478 45.7672 33.5558 45.3149C32.4639 44.8626 31.4718 44.1997 30.636 43.364C29.8003 42.5282 29.1374 41.5361 28.6851 40.4442C28.2328 39.3522 28 38.1819 28 37C28 34.6131 28.9482 32.3239 30.636 30.636C32.3239 28.9482 34.6131 28 37 28C39.3869 28 41.6761 28.9482 43.364 30.636C45.0518 32.3239 46 34.6131 46 37Z"
-        stroke="white"
+        stroke="#7474AE"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <defs>
         <filter
-          id="filter0_d_181_2422"
+          id="filter0_d_15_2"
           x="8"
           y="12"
           width="58"
@@ -754,12 +753,12 @@ export const Icons = {
           <feBlend
             mode="normal"
             in2="BackgroundImageFix"
-            result="effect1_dropShadow_181_2422"
+            result="effect1_dropShadow_15_2"
           />
           <feBlend
             mode="normal"
             in="SourceGraphic"
-            in2="effect1_dropShadow_181_2422"
+            in2="effect1_dropShadow_15_2"
             result="shape"
           />
         </filter>
@@ -776,8 +775,6 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
     >
       <circle cx="37" cy="37" r="25" fill="#0AA658" />
-      <circle cx="37" cy="37" r="30.5" stroke="white" />
-      <circle cx="37" cy="37" r="36.75" stroke="white" stroke-width="0.5" />
       <path
         d="M29.5 37.5L34 42L44.5 32"
         stroke="white"
@@ -1114,19 +1111,59 @@ export const Icons = {
   clock: (props: IconProps) => (
     <svg
       {...props}
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
+      width="62"
+      height="62"
+      viewBox="0 0 62 62"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <g filter="url(#filter0_d_15_10)">
+        <circle cx="29" cy="25" r="25" fill="#33334E" />
+      </g>
       <path
-        d="M12 8V12L15 15M21 12C21 13.1819 20.7672 14.3522 20.3149 15.4442C19.8626 16.5361 19.1997 17.5282 18.364 18.364C17.5282 19.1997 16.5361 19.8626 15.4442 20.3149C14.3522 20.7672 13.1819 21 12 21C10.8181 21 9.64778 20.7672 8.55585 20.3149C7.46392 19.8626 6.47177 19.1997 5.63604 18.364C4.80031 17.5282 4.13738 16.5361 3.68508 15.4442C3.23279 14.3522 3 13.1819 3 12C3 9.61305 3.94821 7.32387 5.63604 5.63604C7.32387 3.94821 9.61305 3 12 3C14.3869 3 16.6761 3.94821 18.364 5.63604C20.0518 7.32387 21 9.61305 21 12Z"
-        stroke="white"
+        d="M29 21V25L32 28M38 25C38 26.1819 37.7672 27.3522 37.3149 28.4442C36.8626 29.5361 36.1997 30.5282 35.364 31.364C34.5282 32.1997 33.5361 32.8626 32.4442 33.3149C31.3522 33.7672 30.1819 34 29 34C27.8181 34 26.6478 33.7672 25.5558 33.3149C24.4639 32.8626 23.4718 32.1997 22.636 31.364C21.8003 30.5282 21.1374 29.5361 20.6851 28.4442C20.2328 27.3522 20 26.1819 20 25C20 22.6131 20.9482 20.3239 22.636 18.636C24.3239 16.9482 26.6131 16 29 16C31.3869 16 33.6761 16.9482 35.364 18.636C37.0518 20.3239 38 22.6131 38 25Z"
+        stroke="#7474AE"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
+      <defs>
+        <filter
+          id="filter0_d_15_10"
+          x="0"
+          y="0"
+          width="58"
+          height="58"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="4" />
+          <feGaussianBlur stdDeviation="2" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_15_10"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_dropShadow_15_10"
+            result="shape"
+          />
+        </filter>
+      </defs>
     </svg>
   ),
   cross: (props: IconProps) => (

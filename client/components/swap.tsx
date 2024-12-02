@@ -49,9 +49,9 @@ import {
   Y_STRK_TOKEN_SEPOLIA,
   Z_STRK_TOKEN_SEPOLIA,
 } from "@/constants";
-import { toast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { cn, formatNumberWithCommas } from "@/lib/utils";
-import { getStrkPrice } from "@/store/common.store";
+import { getStrkPrice, isTxAccepted } from "@/store/common.store";
 
 import MyNumber from "@/lib/MyNumber";
 import { useAtomValue } from "jotai";
@@ -106,9 +106,12 @@ const Swap: React.FC = () => {
   const [selectedToken, setSelectedToken] = React.useState("xstrk");
   const [swapToken, setSwapToken] = React.useState("ystrk");
 
+  const { isMobile } = useSidebar();
+  const { dismiss } = useToast();
+
   const { address } = useAccount();
   const { connect: connectSnReact } = useConnect();
-  const { sendAsync } = useSendTransaction({});
+  const { sendAsync, data, error, isPending } = useSendTransaction({});
 
   const strkPrice = useAtomValue(getStrkPrice);
 
@@ -180,8 +183,6 @@ const Swap: React.FC = () => {
         };
     }
   };
-
-  const { isMobile } = useSidebar();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -310,6 +311,83 @@ const Swap: React.FC = () => {
 
     await sendAsync([call1, call2]);
   };
+
+  React.useEffect(() => {
+    (async () => {
+      if (isPending) {
+        toast({
+          itemID: "swap",
+          variant: "pending",
+          description: (
+            <div className="flex items-center gap-5 border-none">
+              <div className="relative shrink-0">
+                <div className="absolute left-3 top-3 z-10 size-[52px] rounded-full border-[#303054] bg-[#262638]" />
+                <Icons.toastPending className="animate-spin" />
+                <Icons.clock className="absolute left-[8px] top-[12px] z-20" />
+              </div>
+              <div className="flex flex-col items-start gap-2 text-xs font-medium text-white/70">
+                <span className="text-[18px] font-semibold text-white/90">
+                  In Progress..
+                </span>
+                Swapping {form.getValues("swapAmount")}{" "}
+                {TOKENS.find((t) => t.value === selectedToken)?.label} to{" "}
+                {TOKENS.find((t) => t.value === swapToken)?.label}
+              </div>
+            </div>
+          ),
+        });
+      }
+
+      if (error?.name?.includes("UserRejectedRequestError")) {
+        dismiss();
+      }
+
+      if (error?.name && !error?.name?.includes("UserRejectedRequestError")) {
+        toast({
+          itemID: "swap",
+          variant: "pending",
+          description: (
+            <div className="flex items-center gap-5 border-none pl-2">
+              ❌
+              <div className="flex flex-col items-start text-xs font-medium text-white/70">
+                <span className="text-base font-semibold text-white/90">
+                  Something went wrong
+                </span>
+                Please try again
+              </div>
+            </div>
+          ),
+        });
+      }
+
+      if (data) {
+        const res = await isTxAccepted(data?.transaction_hash);
+
+        if (res) {
+          toast({
+            itemID: "swap",
+            variant: "complete",
+            duration: 3000,
+            description: (
+              <div className="flex items-center gap-2 border-none">
+                <Icons.toastSuccess />
+                <div className="flex flex-col items-start gap-2 text-xs font-medium text-white/70">
+                  <span className="text-[18px] font-semibold text-white/90">
+                    Success 🎉
+                  </span>
+                  Swapped {form.getValues("swapAmount")}{" "}
+                  {TOKENS.find((t) => t.value === selectedToken)?.label} to{" "}
+                  {TOKENS.find((t) => t.value === swapToken)?.label}
+                </div>
+              </div>
+            ),
+          });
+
+          form.reset();
+        }
+      }
+    })();
+  }, [data, data?.transaction_hash, error?.name, form, isPending]);
 
   return (
     <div className="h-fit w-full rounded-xl border border-[#303054] bg-[#262638] px-6 py-3">

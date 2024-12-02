@@ -32,7 +32,7 @@ export function getProvider() {
   return new RpcProvider({
     nodeUrl:
       process.env.NEXT_PUBLIC_RPC_URL ||
-      "https://starknet-mainnet.public.blastapi.io",
+      "https://starknet-sepolia.public.blastapi.io",
     blockIdentifier: "pending",
   });
 }
