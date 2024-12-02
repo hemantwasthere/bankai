@@ -10,6 +10,8 @@ pub trait ISwapStrat<T> {
     fn total_liquidity(ref self: T) -> u256;
     fn set_fees(ref self: T, lst_address: ContractAddress);
     fn init_pool_creation(ref self: T, lst_addresses: Array<ContractAddress>, token_amount: u256);
+    fn request_withdrawal(ref self:T,asset:ContractAddress,lst_amount:u256,receiver:ContractAddress);
+    fn vault_init(ref self:T, vault_:ContractAddress);
 }
 
 #[starknet::contract]
@@ -44,6 +46,7 @@ mod Swap {
         max_liquidity: u256,
         fee_constant: u256,
         fee_collector: ContractAddress,
+        vault:ContractAddress,
     }
 
     #[event]
@@ -241,6 +244,18 @@ mod Swap {
                     break;
                 }
             };
+        }
+
+        fn request_withdrawal(ref self:ContractState,asset:ContractAddress,lst_amount:u256,receiver:ContractAddress){
+            let caller = get_caller_address();
+            let this = get_contract_address();
+            assert(caller == self.vault.read(),'Only vault can call');
+            ERC20Helper::strict_transfer_from(asset, this, receiver, lst_amount);
+        }
+
+        fn vault_init(ref self:ContractState,vault_:ContractAddress){
+            self.ownable.assert_only_owner();
+            self.vault.write(vault_);
         }
     }
 }

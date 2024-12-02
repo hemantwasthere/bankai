@@ -104,7 +104,7 @@ mod Vault {
             let swap_contract = self.swap_contract.read();
             let swap_contract_dispatcher = ISwapStratDispatcher{contract_address :self.swap_contract.read() };
             let from_data = swap_contract_dispatcher.get_LST_data(asset);
-            ERC20Helper::strict_transfer_from(asset ,caller, this, amount);
+            ERC20Helper::strict_transfer_from(asset ,caller, swap_contract, amount);
 
             let shares = self.preview_deposit(asset,amount);
 
@@ -139,7 +139,7 @@ mod Vault {
             let updated_lst_amount = self.pool_lst_amounts.read(asset) - lst_to_withdraw;
             self.pool_lst_amounts.write(asset,updated_lst_amount);
 
-            ERC20Helper::strict_transfer_from(asset ,this, caller, lst_to_withdraw);
+            swap_contract_dispatcher.request_withdrawal(asset,lst_to_withdraw,receiver);
         }
 
         
@@ -162,9 +162,8 @@ mod Vault {
             let total_shares = self.total_supply() + pow_256(10, self.offset.read());
             let value_in_strk = (shares * total_shares) / total_assets;
             let value_in_target_lst = IERC4626Dispatcher {contract_address: asset}.convert_to_shares(value_in_strk);
-            let assets = value_in_strk;
-            let assets = shares * total_assets / total_shares;
-            if round && ((assets * total_shares) / total_assets < shares) {
+            let assets = value_in_target_lst;
+            if round && ((value_in_strk * total_shares) / total_assets < shares) {
                 assets + 1
             } else {
                 assets
@@ -176,7 +175,7 @@ mod Vault {
             let total_shares = self.total_supply() + pow_256(10, self.offset.read());
             let value_in_strk = IERC4626Dispatcher {contract_address: asset}.convert_to_assets(assets);
             let share = value_in_strk * total_assets / total_shares;
-            if round && ((share * total_assets) / total_shares < assets) {
+            if round && ((share * total_assets) / total_shares < value_in_strk) {
                 share + 1
             } else {
                 share
