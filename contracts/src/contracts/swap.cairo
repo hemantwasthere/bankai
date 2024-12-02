@@ -9,7 +9,7 @@ pub trait ISwapStrat<T> {
     fn add_lst(ref self: T, lst_address: ContractAddress);
     fn total_liquidity(ref self: T) -> u256;
     fn set_fees(ref self: T, lst_address: ContractAddress);
-    fn init_pool_creation(ref self: T, lst_addresses: Array<ContractAddress>, token_amount: u256);
+    fn init_pool_creation(ref self: T, token_amount: u256);
 }
 
 #[starknet::contract]
@@ -44,6 +44,7 @@ mod Swap {
         max_liquidity: u256,
         fee_constant: u256,
         fee_collector: ContractAddress,
+        
     }
 
     #[event]
@@ -58,10 +59,10 @@ mod Swap {
 
     #[derive(Drop, starknet::Event)]
     pub struct Swap {
-        pub from: ContractAddress,
-        pub to: ContractAddress,
-        pub from_val: u256,
-        pub to_val: u256
+        pub from_add: ContractAddress,
+        pub to_add: ContractAddress,
+        pub from_amt: u256,
+        pub to_amt: u256
     }
 
     #[constructor]
@@ -130,9 +131,10 @@ mod Swap {
             );
             let strk_amt = IERC4626Dispatcher {contract_address: from_add}
             .convert_to_assets(from_amt_fee);
-            let to_token_amount = IERC4626Dispatcher {contract_address: to_add}
+            let to_amt = IERC4626Dispatcher {contract_address: to_add}
             .convert_to_shares(strk_amt);
-            ERC20Helper::strict_transfer_from(to_add, this, caller, to_token_amount);
+            ERC20Helper::strict_transfer_from(to_add, this, caller, to_amt);
+            self.emit(Swap {from_add, to_add, from_amt, to_amt});
 
             //fee changes for from_token
             self.set_fees(from_add);
@@ -225,14 +227,14 @@ mod Swap {
             self.lst_tokens.write(lst_address, lst); 
         } 
 
-        fn init_pool_creation(ref self: ContractState, lst_addresses: Array<ContractAddress>, token_amount: u256) {
+        fn init_pool_creation(ref self: ContractState, token_amount: u256) {
             let this = get_contract_address();
             let caller = get_caller_address();
             self.ownable.assert_only_owner();
             let mut count = 0;
             loop {
-                if(count <= lst_addresses.len()) {
-                    let curr_addr = *lst_addresses.at(count);
+                if(count <= self.lst_num.read()) {
+                    let curr_addr = self.lst_addresses.read(count);
                     let lst_amt = IERC4626Dispatcher {contract_address: curr_addr}
                     .convert_to_shares(token_amount);
                     ERC20Helper::strict_transfer_from(curr_addr, caller, this, lst_amt);
