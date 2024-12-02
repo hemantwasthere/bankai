@@ -280,7 +280,7 @@ const Swap: React.FC = () => {
       });
     }
 
-    const contractSTRK = new Contract(erc4626Abi, STRK_TOKEN_SEPOLIA);
+    // const contractSTRK = new Contract(erc4626Abi, STRK_TOKEN_SEPOLIA);
 
     const selectedTokenSepoliaAddress = TOKENS.find(
       (t) => t.value === selectedToken,
@@ -309,19 +309,6 @@ const Swap: React.FC = () => {
     ]);
 
     await sendAsync([call1, call2]);
-
-    // const call2 = selectedTokenContract.populate("deposit", [
-    //   MyNumber.fromEther(values.swapAmount, 18),
-    //   // TOKENS.find((t) => t.value === selectedToken)?.sepoliaAddress!,
-    //   address,
-    // ]);
-
-    //  const call1 = selectedTokenContract.populate("approve", [
-    //   selectedTokenSepoliaAddress,
-    //   MyNumber.fromEther(values.swapAmount, 18),
-    // ]);
-
-    // await sendAsync([call1, call2]);
   };
 
   return (

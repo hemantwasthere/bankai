@@ -5,7 +5,7 @@ export const STRK_TOKEN_SEPOLIA =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d" as const;
 
 export const SWAP_CONTRACT_SEPOLIA =
-  "0x026ba35315083bd0c1fb2b92130a1adefa5a3957d9c61d24a11a30dd7a6243ed" as const;
+  "0x02c20579dfdd1725f177465a48dff24de6d99a89d573b9a25e531ed8b6cdebb5" as const;
 
 export const XSTRK_TOKEN_SEPOLIA =
   "0x42de5b868da876768213c48019b8d46cd484e66013ae3275f8a4b97b31fc7eb" as const;
