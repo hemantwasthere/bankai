@@ -10,6 +10,8 @@ pub trait ISwapStrat<T> {
     fn total_liquidity(self: @T) -> u256;
     fn set_fees(ref self: T, lst_address: ContractAddress);
     fn init_pool_creation(ref self: T, token_amount: u256);
+    fn request_withdrawal(ref self:T,asset:ContractAddress,lst_amount:u256,receiver:ContractAddress);
+    fn vault_init(ref self:T,vault_:ContractAddress);
 }
 
 #[starknet::contract]
@@ -22,11 +24,19 @@ mod Swap {
     use erc4626::erc4626::interface::{IERC4626Dispatcher, IERC4626DispatcherTrait};
     use bankai_contract::external::pow;
     use openzeppelin::security::reentrancyguard::{ReentrancyGuardComponent };
+    use openzeppelin::upgrades::UpgradeableComponent;
+    use openzeppelin::security::pausable::{PausableComponent};
+    use bankai_contract::utils::common::CommonComp;
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: ReentrancyGuardComponent, storage: reng, event: ReentrancyGuardEvent);
+    component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
+    component!(path: PausableComponent, storage: pausable, event: PausableEvent);
+    component!(path: CommonComp, storage: common, event: CommonCompEvent);
 
     #[abi(embed_v0)]
+    impl CommonCompImpl = CommonComp::CommonImpl<ContractState>;
+    impl CommonInternalImpl = CommonComp::InternalImpl<ContractState>;
     impl OwnableTwoStepImpl = OwnableComponent::OwnableTwoStepImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
     impl ReentrancyGuardInternalImpl = ReentrancyGuardComponent::InternalImpl<ContractState>;
@@ -37,6 +47,12 @@ mod Swap {
         reng: ReentrancyGuardComponent::Storage,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
+        #[substorage(v0)]
+        upgradeable: UpgradeableComponent::Storage,
+        #[substorage(v0)]
+        pausable: PausableComponent::Storage,
+        #[substorage(v0)]
+        common: CommonComp::Storage,
         lst_num: u256,
         lst_tokens: LegacyMap::<ContractAddress, LST>,
         lst_addresses: LegacyMap::<u256, ContractAddress>,
@@ -44,7 +60,7 @@ mod Swap {
         max_liquidity: u256,
         fee_constant: u256,
         fee_collector: ContractAddress,
-
+        vault: ContractAddress
     }
 
     #[event]
@@ -54,6 +70,12 @@ mod Swap {
         ReentrancyGuardEvent: ReentrancyGuardComponent::Event,
         #[flat]
         OwnableEvent: OwnableComponent::Event,
+        #[flat]
+        CommonCompEvent: CommonComp::Event,
+        #[flat]
+        PausableEvent: PausableComponent::Event,
+        #[flat]
+        UpgradeableEvent: UpgradeableComponent::Event,
         Swap: Swap
     }
 
@@ -86,7 +108,7 @@ mod Swap {
         self.lst_num.write(len);
         let mut count: u256 = 0;
         loop {
-            if(count <= len) {
+            if(count < len) {
                 let count_u32: u32 = count.try_into().unwrap();
                 self.lst_tokens.write(*lst_addresses.at(count_u32), *lst_data.at(count_u32));
                 self.lst_addresses.write(count, *lst_addresses.at(count_u32));
@@ -107,6 +129,8 @@ mod Swap {
         ) {
             self.reng.start();
             assert(from_amt > 0, 'SWAP: Invalid swap amount');
+            self.set_fees(from_add);
+            self.set_fees(to_add);
             let this = get_contract_address();
             let caller= get_caller_address();
             let from_data = self.get_LST_data(from_add);
@@ -118,7 +142,7 @@ mod Swap {
                 to_data.fees.output_fee
             );
             let fee_collector = self.fee_collector.read();
-            ERC20Helper::strict_transfer(
+            ERC20Helper::transfer(
                 from_add,
                 fee_collector,
                 fees
@@ -127,7 +151,7 @@ mod Swap {
             .convert_to_assets(from_amt_fee);
             let to_amt = IERC4626Dispatcher {contract_address: to_add}
             .convert_to_shares(strk_amt);
-            ERC20Helper::strict_transfer_from(to_add, this, caller, to_amt);
+            ERC20Helper::strict_transfer(to_add, caller, to_amt);
             self.emit(Swap {from_add, to_add, from_amt, to_amt});
 
             //fee changes for from_token
@@ -145,7 +169,7 @@ mod Swap {
             let token_fees = input_fee + output_fee;
             let fee_const = self.fee_constant.read();
             // @audit rounding error
-            let fees = (from_val * ( token_fees / 1000 )) / fee_const;
+            let fees = ((from_val * token_fees) / 1000) / fee_const;
              
             ( from_val - fees , fees)
         }
@@ -189,7 +213,7 @@ mod Swap {
             let mut count = 0; 
             let mut total_bal = 0;
             loop {
-                if(count <= total_lst) {
+                if(count < total_lst) {
                     let token = self.lst_addresses.read(count);
                     let bal = ERC20Helper::balanceOf(token, this);
                     let strk_eq = IERC4626Dispatcher {contract_address: token}
@@ -241,7 +265,7 @@ mod Swap {
             self.ownable.assert_only_owner();
             let mut count = 0;
             loop {
-                if(count <= self.lst_num.read()) {
+                if(count < self.lst_num.read()) {
                     let curr_addr = self.lst_addresses.read(count);
                     let lst_amt = IERC4626Dispatcher {contract_address: curr_addr}
                     .convert_to_shares(token_amount);
@@ -252,6 +276,18 @@ mod Swap {
                 }
             };
             self.reng.end();
+        }
+
+        fn request_withdrawal(ref self:ContractState,asset:ContractAddress,lst_amount:u256,receiver:ContractAddress){
+            let caller = get_caller_address();
+            let this = get_contract_address();
+            assert(caller == self.vault.read(),'Only vault can call');
+            ERC20Helper::strict_transfer_from(asset, this, receiver, lst_amount);
+        }
+
+        fn vault_init(ref self:ContractState,vault_:ContractAddress){
+            self.ownable.assert_only_owner();
+            self.vault.write(vault_);
         }
     }
 }
