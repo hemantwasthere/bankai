@@ -250,7 +250,7 @@ mod Swap {
             let caller = get_caller_address();
             let this = get_contract_address();
             assert(caller == self.vault.read(),'Only vault can call');
-            ERC20Helper::strict_transfer_from(asset, this, receiver, lst_amount);
+            ERC20Helper::strict_transfer(asset, receiver, lst_amount);
         }
 
         fn vault_init(ref self:ContractState,vault_:ContractAddress){
