@@ -666,7 +666,7 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  todo
+                  You will get the amount of tokens you will receive after the
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -691,7 +691,8 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  todo
+                  1 {TOKENS.find((t) => t.value === selectedToken)?.label} = 1{" "}
+                  {TOKENS.find((t) => t.value === swapToken)?.label}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -715,7 +716,7 @@ const Swap: React.FC = () => {
                   side="right"
                   className="max-w-60 rounded-md border border-[#03624C] bg-white text-[#03624C]"
                 >
-                  todo
+                  The fee you will pay for the swap
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
