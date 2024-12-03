@@ -48,22 +48,17 @@ mod SINFToken {
     #[abi(embed_v0)]
     impl IERC20StratImpl of IERC20Strat<ContractState> {
         fn mint(ref self: ContractState, recipient: ContractAddress, amount: u256) {
-            self._assert_only_vault();
+            let caller = get_caller_address();
+            assert(caller == self.vault.read(), 'not a owner');
             let this = get_contract_address();
             IERC20StratDispatcher{contract_address:this}.mint(recipient,amount);
         }
 
         fn burn(ref self: ContractState, account: ContractAddress, amount: u256) {
-            self._assert_only_vault();
+            let caller = get_caller_address();
+            assert(caller == self.vault.read(), 'not a owner');
             let this = get_contract_address();
             IERC20StratDispatcher{contract_address:this}.burn(account,amount);
-        }
-    }
-
-    #[generate_trait]
-    impl InternalFunctions of InternalFunctionsTrait {
-        fn _assert_only_vault(ref self: ContractState) {
-            assert(self.vault.read() == get_caller_address(), 'Only owner');
-        }
+        }     
     }
 }
