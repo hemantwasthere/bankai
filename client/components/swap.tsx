@@ -5,6 +5,7 @@ import {
   useAccount,
   useBalance,
   useConnect,
+  useReadContract,
   useSendTransaction,
 } from "@starknet-react/core";
 import { motion } from "framer-motion";
@@ -20,7 +21,10 @@ import {
 import * as z from "zod";
 
 import erc4626Abi from "@/abi/erc4626.abi.json";
-import swapContractAbi from "@/abi/swap.abi.json";
+import {
+  default as swapAbi,
+  default as swapContractAbi,
+} from "@/abi/swap.abi.json";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -55,7 +59,7 @@ import { getStrkPrice, isTxAccepted } from "@/store/common.store";
 
 import MyNumber from "@/lib/MyNumber";
 import { useAtomValue } from "jotai";
-import { Contract } from "starknet";
+import { Contract, uint256 } from "starknet";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
@@ -191,6 +195,18 @@ const Swap: React.FC = () => {
     },
     mode: "onChange",
   });
+
+  // const { data: fee, error: err } = useReadContract({
+  //   abi: swapAbi,
+  //   functionName: "get_fee",
+  //   address: SWAP_CONTRACT_SEPOLIA,
+  //   args: [
+  //     uint256.bnToUint256(form.getValues("swapAmount")),
+  //     // MyNumber.fromEther(form.getValues("swapAmount"), 18),
+  //     TOKENS.find((t) => t.value === selectedToken)?.sepoliaAddress!,
+  //     TOKENS.find((t) => t.value === swapToken)?.sepoliaAddress!,
+  //   ],
+  // });
 
   const connectorConfig: ConnectOptionsWithConnectors = React.useMemo(() => {
     return {
@@ -389,6 +405,9 @@ const Swap: React.FC = () => {
     })();
   }, [data, data?.transaction_hash, error?.name, form, isPending]);
 
+  // console.log(Number(fee), "fee");
+  // console.log(err, "err");
+
   return (
     <div className="h-fit w-full rounded-xl border border-[#303054] bg-[#262638] px-6 py-3">
       <div className="mt-3">
@@ -485,7 +504,7 @@ const Swap: React.FC = () => {
                         <Input
                           className={cn(
                             font.className,
-                            "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
+                            "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center !text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
                                 form.watch("swapAmount")?.length === 0,
