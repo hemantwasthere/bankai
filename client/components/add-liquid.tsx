@@ -22,6 +22,7 @@ import * as z from "zod";
 
 import addLiquidityAbi from "@/abi/add-liquid.abi.json";
 import erc4626Abi from "@/abi/erc4626.abi.json";
+import swapAbi from "@/abi/swap.abi.json";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ import {
 import {
   D_STRK_TOKEN_SEPOLIA,
   NETWORK,
+  SWAP_CONTRACT_SEPOLIA,
   VAULT_SEPOLIA,
   XSTRK_TOKEN_SEPOLIA,
   Y_STRK_TOKEN_SEPOLIA,
@@ -287,14 +289,14 @@ const AddLiquid: React.FC = () => {
 
     const contractToken = new Contract(erc4626Abi, selectedTokenAddress);
 
-    const contract = new Contract(addLiquidityAbi, VAULT_SEPOLIA);
+    const contract = new Contract(swapAbi, SWAP_CONTRACT_SEPOLIA);
 
     const call1 = contractToken.populate("approve", [
       contract.address,
       MyNumber.fromEther(values.depositAmount, 18),
     ]);
 
-    const call2 = contract.populate("deposit_lst", [
+    const call2 = contract.populate("add_liquidity", [
       contractToken.address,
       MyNumber.fromEther(values.depositAmount, 18),
     ]);

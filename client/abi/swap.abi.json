@@ -192,6 +192,46 @@
                 ],
                 "outputs": [],
                 "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "add_liquidity",
+                "inputs": [
+                    {
+                        "name": "lst_address",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "get_fee",
+                "inputs": [
+                    {
+                        "name": "from_val",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "from_token",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "to_token",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
             }
         ]
     },
