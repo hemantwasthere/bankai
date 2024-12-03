@@ -116,6 +116,12 @@ const Swap: React.FC = () => {
   const { address } = useAccount();
   const { connect: connectSnReact } = useConnect();
   const { sendAsync, data, error, isPending } = useSendTransaction({});
+  const { data: tvlInStrk } = useReadContract({
+    abi: swapAbi,
+    functionName: "total_liquidity",
+    address: SWAP_CONTRACT_SEPOLIA,
+    args: [],
+  });
 
   const strkPrice = useAtomValue(getStrkPrice);
 
@@ -405,9 +411,6 @@ const Swap: React.FC = () => {
     })();
   }, [data, data?.transaction_hash, error?.name, form, isPending]);
 
-  // console.log(Number(fee), "fee");
-  // console.log(err, "err");
-
   return (
     <div className="h-fit w-full rounded-xl border border-[#303054] bg-[#262638] px-6 py-3">
       <div className="mt-3 flex items-center justify-between">
@@ -417,9 +420,18 @@ const Swap: React.FC = () => {
             Swap LST tokens with ease
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-white/60">
-          <div className="size-2 animate-pulse rounded-full bg-green-500" />
-          Sepolia
+        <div className="flex flex-col items-end gap-2 text-sm text-white/80">
+          TVL: $
+          {tvlInStrk
+            ? (
+                (Number(tvlInStrk) / 10 ** 18) *
+                Number(strkPrice.value)
+              ).toFixed(2)
+            : 0}
+          <div className="flex items-center gap-2 text-xs text-white/60">
+            <div className="size-2 animate-pulse rounded-full bg-green-500" />
+            Sepolia
+          </div>
         </div>
       </div>
 

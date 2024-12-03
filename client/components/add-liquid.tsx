@@ -5,6 +5,7 @@ import {
   useAccount,
   useBalance,
   useConnect,
+  useReadContract,
   useSendTransaction,
 } from "@starknet-react/core";
 import { motion } from "framer-motion";
@@ -20,7 +21,6 @@ import {
 } from "starknetkit";
 import * as z from "zod";
 
-import addLiquidityAbi from "@/abi/add-liquid.abi.json";
 import erc4626Abi from "@/abi/erc4626.abi.json";
 import swapAbi from "@/abi/swap.abi.json";
 import { Button } from "@/components/ui/button";
@@ -129,6 +129,13 @@ const AddLiquid: React.FC = () => {
   const { data: dSTRK_Balance, isPending: dSTRK_Balance_Pending } = useBalance({
     address,
     token: D_STRK_TOKEN_SEPOLIA,
+  });
+
+  const { data: tvlInStrk } = useReadContract({
+    abi: swapAbi,
+    functionName: "total_liquidity",
+    address: SWAP_CONTRACT_SEPOLIA,
+    args: [],
   });
 
   const selectedTokenBalance = React.useMemo(() => {
@@ -313,9 +320,18 @@ const AddLiquid: React.FC = () => {
             Add your LSTs to earn more
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-white/60">
-          <div className="size-2 animate-pulse rounded-full bg-green-500" />
-          Sepolia
+        <div className="flex flex-col items-end gap-2 text-sm text-white/80">
+          TVL: $
+          {tvlInStrk
+            ? (
+                (Number(tvlInStrk) / 10 ** 18) *
+                Number(strkPrice.value)
+              ).toFixed(2)
+            : 0}
+          <div className="flex items-center gap-2 text-xs text-white/60">
+            <div className="size-2 animate-pulse rounded-full bg-green-500" />
+            Sepolia
+          </div>
         </div>
       </div>
 
