@@ -410,11 +410,17 @@ const Swap: React.FC = () => {
 
   return (
     <div className="h-fit w-full rounded-xl border border-[#303054] bg-[#262638] px-6 py-3">
-      <div className="mt-3">
-        <h4 className="text-xl font-semibold text-white">Swap LSTs</h4>
-        <p className="mt-1 text-sm font-medium text-muted-foreground">
-          Swap LST tokens with ease
-        </p>
+      <div className="mt-3 flex items-center justify-between">
+        <div className="flex flex-col">
+          <h4 className="text-xl font-semibold text-white">Swap LSTs</h4>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">
+            Swap LST tokens with ease
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-white/60">
+          <div className="size-2 animate-pulse rounded-full bg-green-500" />
+          Sepolia
+        </div>
       </div>
 
       <div className="mt-4 flex w-full flex-col items-start rounded-xl rounded-b-none bg-[#1A1A2D] p-4 pb-8 lg:gap-2">
