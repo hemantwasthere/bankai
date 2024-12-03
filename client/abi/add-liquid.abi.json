@@ -1,0 +1,408 @@
+[
+    {
+        "type": "impl",
+        "name": "VaultImpl",
+        "interface_name": "bankai_contract::contracts::vault::IVaultStrat"
+    },
+    {
+        "type": "struct",
+        "name": "core::integer::u256",
+        "members": [
+            {
+                "name": "low",
+                "type": "core::integer::u128"
+            },
+            {
+                "name": "high",
+                "type": "core::integer::u128"
+            }
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "core::bool",
+        "variants": [
+            {
+                "name": "False",
+                "type": "()"
+            },
+            {
+                "name": "True",
+                "type": "()"
+            }
+        ]
+    },
+    {
+        "type": "interface",
+        "name": "bankai_contract::contracts::vault::IVaultStrat",
+        "items": [
+            {
+                "type": "function",
+                "name": "deposit_lst",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "withdraw_lst",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "shares",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "receiver",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "preview_deposit",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "assets",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "preview_redeem",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "shares",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "convert_to_assets",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "shares",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "round",
+                        "type": "core::bool"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "convert_to_shares",
+                "inputs": [
+                    {
+                        "name": "asset",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "assets",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "round",
+                        "type": "core::bool"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "total_assets",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "total_supply",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "init_token",
+                "inputs": [
+                    {
+                        "name": "sinf",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            }
+        ]
+    },
+    {
+        "type": "impl",
+        "name": "OwnableTwoStepImpl",
+        "interface_name": "openzeppelin::access::ownable::interface::IOwnableTwoStep"
+    },
+    {
+        "type": "interface",
+        "name": "openzeppelin::access::ownable::interface::IOwnableTwoStep",
+        "items": [
+            {
+                "type": "function",
+                "name": "owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "pending_owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "accept_ownership",
+                "inputs": [],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "transfer_ownership",
+                "inputs": [
+                    {
+                        "name": "new_owner",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "renounce_ownership",
+                "inputs": [],
+                "outputs": [],
+                "state_mutability": "external"
+            }
+        ]
+    },
+    {
+        "type": "constructor",
+        "name": "constructor",
+        "inputs": [
+            {
+                "name": "sinf",
+                "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+                "name": "swap_contract",
+                "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+                "name": "owner",
+                "type": "core::starknet::contract_address::ContractAddress"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "previous_owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "new_owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "previous_owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "new_owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+        "kind": "enum",
+        "variants": [
+            {
+                "name": "OwnershipTransferred",
+                "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+                "kind": "nested"
+            },
+            {
+                "name": "OwnershipTransferStarted",
+                "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+                "kind": "nested"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "bankai_contract::contracts::vault::Vault::Deposit",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "sender",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "assets",
+                "type": "core::integer::u256",
+                "kind": "data"
+            },
+            {
+                "name": "shares",
+                "type": "core::integer::u256",
+                "kind": "data"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "bankai_contract::contracts::vault::Vault::Withdraw",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "sender",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "receiver",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "owner",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "assets",
+                "type": "core::integer::u256",
+                "kind": "data"
+            },
+            {
+                "name": "shares",
+                "type": "core::integer::u256",
+                "kind": "data"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "bankai_contract::contracts::vault::Vault::Event",
+        "kind": "enum",
+        "variants": [
+            {
+                "name": "OwnableEvent",
+                "type": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+                "kind": "flat"
+            },
+            {
+                "name": "Deposit",
+                "type": "bankai_contract::contracts::vault::Vault::Deposit",
+                "kind": "nested"
+            },
+            {
+                "name": "Withdraw",
+                "type": "bankai_contract::contracts::vault::Vault::Withdraw",
+                "kind": "nested"
+            }
+        ]
+    }
+]
