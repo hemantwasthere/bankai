@@ -518,8 +518,10 @@ const Swap: React.FC = () => {
                         >
                           ≈ <span className="mr-[1px]">$</span>
                           {form.watch("swapAmount")
-                            ? Number(form.watch("swapAmount")) *
-                              Number(strkPrice.value)
+                            ? (
+                                Number(form.watch("swapAmount")) *
+                                Number(strkPrice.value)
+                              ).toFixed(4)
                             : 0}
                         </p>
                       </div>
@@ -606,7 +608,9 @@ const Swap: React.FC = () => {
           <p className={cn(font.className, "text-xs text-[#F25E35]")}>
             ≈ <span className="mr-[1px]">$</span>
             {form.watch("swapAmount")
-              ? Number(form.watch("swapAmount")) * Number(strkPrice.value)
+              ? (
+                  Number(form.watch("swapAmount")) * Number(strkPrice.value)
+                ).toFixed(4)
               : 0}
           </p>
         </div>

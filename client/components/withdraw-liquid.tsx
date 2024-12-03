@@ -1,12 +1,18 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAccount, useBalance, useConnect } from "@starknet-react/core";
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useSendTransaction,
+} from "@starknet-react/core";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { Figtree } from "next/font/google";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Contract } from "starknet";
 import {
   connect,
   ConnectOptionsWithConnectors,
@@ -14,6 +20,8 @@ import {
 } from "starknetkit";
 import * as z from "zod";
 
+import addLiquidityAbi from "@/abi/add-liquid.abi.json";
+import erc4626Abi from "@/abi/erc4626.abi.json";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -33,10 +41,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NETWORK, STRK_TOKEN_SEPOLIA, XSTRK_TOKEN_SEPOLIA } from "@/constants";
+import {
+  D_STRK_TOKEN_SEPOLIA,
+  NETWORK,
+  STRK_TOKEN_SEPOLIA,
+  VAULT_SEPOLIA,
+  XSTRK_TOKEN_SEPOLIA,
+  Y_STRK_TOKEN_SEPOLIA,
+  Z_STRK_TOKEN_SEPOLIA,
+} from "@/constants";
 import { toast } from "@/hooks/use-toast";
+import MyNumber from "@/lib/MyNumber";
 import { cn } from "@/lib/utils";
 
+import { getStrkPrice } from "@/store/common.store";
+import { useAtomValue } from "jotai";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
@@ -45,7 +64,7 @@ const font = Figtree({
 });
 
 const formSchema = z.object({
-  swapAmount: z.string().refine(
+  withdrawAmount: z.string().refine(
     (v) => {
       const n = Number(v);
       return !isNaN(n) && v?.length > 0 && n > 0;
@@ -87,51 +106,57 @@ const WithdrawLiquid: React.FC = () => {
   const [withdrawToken, setWithdrawToken] = React.useState("xstrk");
 
   const { address } = useAccount();
+  const { sendAsync, data, error, isPending } = useSendTransaction({});
+
+  const strkPrice = useAtomValue(getStrkPrice);
+
   const { data: xSTRK_Balance, isPending: xSTRK_Balance_Pending } = useBalance({
     address,
     token: XSTRK_TOKEN_SEPOLIA,
   });
-  const { data: sSTRK_Balance, isPending: sSTRK_Balance_Pending } = useBalance({
+
+  const { data: ySTRK_Balance, isPending: ySTRK_Balance_Pending } = useBalance({
     address,
-    token: STRK_TOKEN_SEPOLIA,
+    token: Y_STRK_TOKEN_SEPOLIA,
   });
-  const { data: nstsSTRK_Balance, isPending: nstsSTRK_Balance_Pending } =
-    useBalance({
-      address,
-      token: STRK_TOKEN_SEPOLIA,
-    });
-  const { data: Zend_Balance, isPending: Zend_Balance_Pending } = useBalance({
+
+  const { data: zSTRK_Balance, isPending: zSTRK_Balance_Pending } = useBalance({
     address,
-    token: STRK_TOKEN_SEPOLIA,
+    token: Z_STRK_TOKEN_SEPOLIA,
+  });
+
+  const { data: dSTRK_Balance, isPending: dSTRK_Balance_Pending } = useBalance({
+    address,
+    token: D_STRK_TOKEN_SEPOLIA,
   });
 
   const selectedTokenBalance = React.useMemo(() => {
     switch (withdrawToken) {
       case "xstrk":
         return xSTRK_Balance;
-      case "sstrk":
-        return sSTRK_Balance;
-      case "nststrk":
-        return nstsSTRK_Balance;
-      case "zend":
-        return Zend_Balance;
+      case "ystrk":
+        return ySTRK_Balance;
+      case "zstrk":
+        return zSTRK_Balance;
+      case "dstrk":
+        return dSTRK_Balance;
       default:
         return xSTRK_Balance;
     }
   }, [
     withdrawToken,
     xSTRK_Balance,
-    sSTRK_Balance,
-    nstsSTRK_Balance,
-    Zend_Balance,
+    ySTRK_Balance,
+    zSTRK_Balance,
+    dSTRK_Balance,
   ]);
 
   const getTokenBalance = (token: string) => {
     if (
       xSTRK_Balance_Pending ||
-      sSTRK_Balance_Pending ||
-      nstsSTRK_Balance_Pending ||
-      Zend_Balance_Pending
+      ySTRK_Balance_Pending ||
+      zSTRK_Balance_Pending ||
+      dSTRK_Balance_Pending
     ) {
       return {
         formatted: "0",
@@ -142,11 +167,11 @@ const WithdrawLiquid: React.FC = () => {
       case "xstrk":
         return xSTRK_Balance;
       case "ystrk":
-        return sSTRK_Balance;
+        return ySTRK_Balance;
       case "zstrk":
-        return nstsSTRK_Balance;
+        return zSTRK_Balance;
       case "dstrk":
-        return Zend_Balance;
+        return dSTRK_Balance;
       default:
         return {
           formatted: "0",
@@ -161,7 +186,7 @@ const WithdrawLiquid: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     values: {
-      swapAmount: "",
+      withdrawAmount: "",
     },
     mode: "onChange",
   });
@@ -207,33 +232,35 @@ const WithdrawLiquid: React.FC = () => {
 
     if (selectedTokenBalance && percentage === 100) {
       if (Number(selectedTokenBalance?.formatted) < 1) {
-        form.setValue("swapAmount", "0");
-        form.clearErrors("swapAmount");
+        form.setValue("withdrawAmount", "0");
+        form.clearErrors("withdrawAmount");
         return;
       }
 
       form.setValue(
-        "swapAmount",
+        "withdrawAmount",
         (Number(selectedTokenBalance?.formatted) - 1).toString(),
       );
-      form.clearErrors("swapAmount");
+      form.clearErrors("withdrawAmount");
       return;
     }
 
     if (selectedTokenBalance) {
       form.setValue(
-        "swapAmount",
+        "withdrawAmount",
         (
           (Number(selectedTokenBalance?.formatted) * percentage) /
           100
         ).toString(),
       );
-      form.clearErrors("swapAmount");
+      form.clearErrors("withdrawAmount");
     }
   };
 
   const onSubmit = async (values: FormValues) => {
-    if (Number(values.swapAmount) > Number(selectedTokenBalance?.formatted)) {
+    if (
+      Number(values.withdrawAmount) > Number(selectedTokenBalance?.formatted)
+    ) {
       return toast({
         description: (
           <div className="flex items-center gap-2">
@@ -255,25 +282,25 @@ const WithdrawLiquid: React.FC = () => {
       });
     }
 
-    // const call1 = contractSTRK.populate("approve", [
-    //   contract.address,
-    //   MyNumber.fromEther(values.stakeAmount, 18),
-    // ]);
+    const selectedTokenAddress = TOKENS.find(
+      (t) => t.value === withdrawToken,
+    )?.sepoliaAddress!;
 
-    // if (referrer) {
-    //   const call2 = contract.populate("deposit_with_referral", [
-    //     MyNumber.fromEther(values.stakeAmount, 18),
-    //     address,
-    //     referrer,
-    //   ]);
-    //   await sendAsync([call1, call2]);
-    // } else {
-    //   const call2 = contract.populate("deposit", [
-    //     MyNumber.fromEther(values.stakeAmount, 18),
-    //     address,
-    //   ]);
-    //   await sendAsync([call1, call2]);
-    // }
+    const contractToken = new Contract(erc4626Abi, selectedTokenAddress);
+
+    const contract = new Contract(addLiquidityAbi, VAULT_SEPOLIA);
+
+    const call1 = contractToken.populate("approve", [
+      contract.address,
+      MyNumber.fromEther(values.withdrawAmount, 18),
+    ]);
+
+    const call2 = contract.populate("withdraw_lst", [
+      contractToken.address,
+      MyNumber.fromEther(values.withdrawAmount, 18),
+    ]);
+
+    await sendAsync([call1, call2]);
   };
 
   return (
@@ -358,7 +385,7 @@ const WithdrawLiquid: React.FC = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
               <FormField
                 control={form.control}
-                name="swapAmount"
+                name="withdrawAmount"
                 render={({ field }) => (
                   <FormItem className="relative space-y-1">
                     <FormControl>
@@ -369,21 +396,21 @@ const WithdrawLiquid: React.FC = () => {
                             "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
-                                form.watch("swapAmount")?.length === 0,
+                                form.watch("withdrawAmount")?.length === 0,
                               "text-red-500":
-                                form.formState.errors.swapAmount ||
-                                Number(form.getValues("swapAmount")) >
+                                form.formState.errors.withdrawAmount ||
+                                Number(form.getValues("withdrawAmount")) >
                                   Number(selectedTokenBalance?.formatted),
                               "max-w-[250px]":
-                                form.watch("swapAmount")?.length > 9,
+                                form.watch("withdrawAmount")?.length > 9,
                               "max-w-[360px]":
-                                form.watch("swapAmount")?.length > 12,
+                                form.watch("withdrawAmount")?.length > 12,
                               "max-w-[420px]":
-                                form.watch("swapAmount")?.length > 15,
+                                form.watch("withdrawAmount")?.length > 15,
                               "max-w-[500px]":
-                                form.watch("swapAmount")?.length > 18,
+                                form.watch("withdrawAmount")?.length > 18,
                               "max-w-[520px]":
-                                form.watch("swapAmount")?.length > 21,
+                                form.watch("withdrawAmount")?.length > 21,
                             },
                           )}
                           placeholder={`0 ${
@@ -398,8 +425,11 @@ const WithdrawLiquid: React.FC = () => {
                           )}
                         >
                           ≈ <span className="mr-[1px]">$</span>
-                          {form.watch("swapAmount")
-                            ? Number(form.watch("swapAmount")).toFixed(4)
+                          {form.watch("withdrawAmount")
+                            ? (
+                                Number(form.getValues("withdrawAmount")) *
+                                Number(strkPrice.value)
+                              ).toFixed(4)
                             : 0}
                         </p>
                       </div>
@@ -448,8 +478,8 @@ const WithdrawLiquid: React.FC = () => {
           <Button
             type="submit"
             disabled={
-              Number(form.getValues("swapAmount")) <= 0 ||
-              isNaN(Number(form.getValues("swapAmount")))
+              Number(form.getValues("withdrawAmount")) <= 0 ||
+              isNaN(Number(form.getValues("withdrawAmount")))
                 ? true
                 : false
             }

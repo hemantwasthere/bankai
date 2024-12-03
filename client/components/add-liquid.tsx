@@ -12,6 +12,7 @@ import { Info } from "lucide-react";
 import { Figtree } from "next/font/google";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Contract } from "starknet";
 import {
   connect,
   ConnectOptionsWithConnectors,
@@ -43,17 +44,17 @@ import {
 import {
   D_STRK_TOKEN_SEPOLIA,
   NETWORK,
-  STRK_TOKEN_SEPOLIA,
   VAULT_SEPOLIA,
   XSTRK_TOKEN_SEPOLIA,
   Y_STRK_TOKEN_SEPOLIA,
   Z_STRK_TOKEN_SEPOLIA,
 } from "@/constants";
 import { toast } from "@/hooks/use-toast";
+import MyNumber from "@/lib/MyNumber";
 import { cn } from "@/lib/utils";
 
-import MyNumber from "@/lib/MyNumber";
-import { Contract } from "starknet";
+import { getStrkPrice } from "@/store/common.store";
+import { useAtomValue } from "jotai";
 import { Icons } from "./Icons";
 import { getConnectors } from "./navbar";
 
@@ -62,7 +63,7 @@ const font = Figtree({
 });
 
 const formSchema = z.object({
-  swapAmount: z.string().refine(
+  depositAmount: z.string().refine(
     (v) => {
       const n = Number(v);
       return !isNaN(n) && v?.length > 0 && n > 0;
@@ -105,6 +106,8 @@ const AddLiquid: React.FC = () => {
 
   const { address } = useAccount();
   const { sendAsync, data, error, isPending } = useSendTransaction({});
+
+  const strkPrice = useAtomValue(getStrkPrice);
 
   const { data: xSTRK_Balance, isPending: xSTRK_Balance_Pending } = useBalance({
     address,
@@ -182,7 +185,7 @@ const AddLiquid: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     values: {
-      swapAmount: "",
+      depositAmount: "",
     },
     mode: "onChange",
   });
@@ -228,33 +231,35 @@ const AddLiquid: React.FC = () => {
 
     if (selectedTokenBalance && percentage === 100) {
       if (Number(selectedTokenBalance?.formatted) < 1) {
-        form.setValue("swapAmount", "0");
-        form.clearErrors("swapAmount");
+        form.setValue("depositAmount", "0");
+        form.clearErrors("depositAmount");
         return;
       }
 
       form.setValue(
-        "swapAmount",
+        "depositAmount",
         (Number(selectedTokenBalance?.formatted) - 1).toString(),
       );
-      form.clearErrors("swapAmount");
+      form.clearErrors("depositAmount");
       return;
     }
 
     if (selectedTokenBalance) {
       form.setValue(
-        "swapAmount",
+        "depositAmount",
         (
           (Number(selectedTokenBalance?.formatted) * percentage) /
           100
         ).toString(),
       );
-      form.clearErrors("swapAmount");
+      form.clearErrors("depositAmount");
     }
   };
 
   const onSubmit = async (values: FormValues) => {
-    if (Number(values.swapAmount) > Number(selectedTokenBalance?.formatted)) {
+    if (
+      Number(values.depositAmount) > Number(selectedTokenBalance?.formatted)
+    ) {
       return toast({
         description: (
           <div className="flex items-center gap-2">
@@ -286,12 +291,12 @@ const AddLiquid: React.FC = () => {
 
     const call1 = contractToken.populate("approve", [
       contract.address,
-      MyNumber.fromEther(values.swapAmount, 18),
+      MyNumber.fromEther(values.depositAmount, 18),
     ]);
 
     const call2 = contract.populate("deposit_lst", [
       contractToken.address,
-      MyNumber.fromEther(values.swapAmount, 18),
+      MyNumber.fromEther(values.depositAmount, 18),
     ]);
 
     await sendAsync([call1, call2]);
@@ -379,7 +384,7 @@ const AddLiquid: React.FC = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
               <FormField
                 control={form.control}
-                name="swapAmount"
+                name="depositAmount"
                 render={({ field }) => (
                   <FormItem className="relative space-y-1">
                     <FormControl>
@@ -390,21 +395,21 @@ const AddLiquid: React.FC = () => {
                             "mx-auto h-fit min-w-[180px] max-w-[160px] border-none px-0 pr-1 text-center text-2xl text-white/80 shadow-none outline-none placeholder:px-4 placeholder:text-center placeholder:text-[#7F8287] focus-visible:ring-0 lg:pr-0 lg:!text-3xl",
                             {
                               "text-start":
-                                form.watch("swapAmount")?.length === 0,
+                                form.watch("depositAmount")?.length === 0,
                               "text-red-500":
-                                form.formState.errors.swapAmount ||
-                                Number(form.getValues("swapAmount")) >
+                                form.formState.errors.depositAmount ||
+                                Number(form.getValues("depositAmount")) >
                                   Number(selectedTokenBalance?.formatted),
                               "max-w-[250px]":
-                                form.watch("swapAmount")?.length > 9,
+                                form.watch("depositAmount")?.length > 9,
                               "max-w-[360px]":
-                                form.watch("swapAmount")?.length > 12,
+                                form.watch("depositAmount")?.length > 12,
                               "max-w-[420px]":
-                                form.watch("swapAmount")?.length > 15,
+                                form.watch("depositAmount")?.length > 15,
                               "max-w-[500px]":
-                                form.watch("swapAmount")?.length > 18,
+                                form.watch("depositAmount")?.length > 18,
                               "max-w-[520px]":
-                                form.watch("swapAmount")?.length > 21,
+                                form.watch("depositAmount")?.length > 21,
                             },
                           )}
                           placeholder={`0 ${
@@ -419,8 +424,11 @@ const AddLiquid: React.FC = () => {
                           )}
                         >
                           ≈ <span className="mr-[1px]">$</span>
-                          {form.watch("swapAmount")
-                            ? Number(form.watch("swapAmount")).toFixed(4)
+                          {form.watch("depositAmount")
+                            ? (
+                                Number(form.getValues("depositAmount")) *
+                                Number(strkPrice.value)
+                              ).toFixed(4)
                             : 0}
                         </p>
                       </div>
@@ -469,8 +477,8 @@ const AddLiquid: React.FC = () => {
           <Button
             type="submit"
             disabled={
-              Number(form.getValues("swapAmount")) <= 0 ||
-              isNaN(Number(form.getValues("swapAmount")))
+              Number(form.getValues("depositAmount")) <= 0 ||
+              isNaN(Number(form.getValues("depositAmount")))
                 ? true
                 : false
             }
